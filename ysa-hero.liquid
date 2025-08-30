@@ -77,7 +77,7 @@
     }
 
     /* TICKER */
-    #ysa-hero-{{ section.id }} .ysa-ticker{ position:relative; width:100%; overflow:hidden; z-index:1; padding: 12px 0; margin-top: clamp(20px, 4vh, 40px); -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
+    #ysa-hero-{{ section.id }} .ysa-ticker{ position:relative; width:100%; overflow:hidden; z-index:1; margin-top:auto; padding: clamp(20px, 4vh, 40px) 0 12px; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
     #ysa-hero-{{ section.id }} .ysa-ticker .lane{ display:flex; gap:14px; width:max-content; padding-left: 2vw; animation: ysa-marquee-{{ section.id }} 30s linear infinite; }
     #ysa-hero-{{ section.id }} .ysa-ticker .wrap{ display:flex; width:max-content; }
     @keyframes ysa-marquee-{{ section.id }}{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
@@ -86,7 +86,8 @@
     #ysa-hero-{{ section.id }} .ysa-ticker .icon svg{ width:100%; height:100%; fill:#36d3ff; }
 
     /* FEATURED PRODUCTS (up to 4) */
-    #ysa-hero-{{ section.id }} .featured{ width:min(1280px, 94vw); margin: var(--gap-featured) auto clamp(36px, 8vh, 72px); padding: clamp(24px, 3vw, 40px); background:#0b1226; border-radius:24px; border:1px solid rgba(134,242,255,.14); box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .featured-wrap{ background:#0b1226; padding: var(--gap-featured) 0 clamp(36px, 8vh, 72px); box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .featured{ width:min(1280px, 94vw); margin:0 auto; padding: clamp(24px, 3vw, 40px); }
     #ysa-hero-{{ section.id }} .featured .head{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-bottom: clamp(18px, 3vh, 28px); }
     #ysa-hero-{{ section.id }} .featured .title{ grid-column:1 / -1; text-align:center; margin:0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(24px, 3.2vw, 40px); letter-spacing:.4px; background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
     #ysa-hero-{{ section.id }} .featured .right{ grid-column:1 / -1; display:flex; justify-content:flex-end; }
@@ -143,7 +144,8 @@
     #ysa-hero-{{ section.id }} .how-btn:hover{ transform: translateY(-6px) scale(1.03); box-shadow: 0 18px 44px rgba(18,180,255,.55), 0 0 24px rgba(79,220,255,.45), inset 0 0 18px rgba(255,255,255,.24); }
 
     /* REVIEWS (auto-scroll) */
-    #ysa-hero-{{ section.id }} .reviews{ width:min(1280px, 94vw); margin: var(--gap-reviews) auto clamp(48px, 10vh, 100px); position:relative; padding: clamp(24px, 3vw, 40px); background:#0b1226; border-radius:24px; border:1px solid rgba(134,242,255,.14); box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .reviews-wrap{ background:#0b1226; padding: var(--gap-reviews) 0 clamp(48px, 10vh, 100px); box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .reviews{ width:min(1280px, 94vw); margin:0 auto; position:relative; padding: clamp(24px, 3vw, 40px); }
     #ysa-hero-{{ section.id }} .reviews-title{ margin:0; text-align:center; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(24px, 3vw, 38px); background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
     #ysa-hero-{{ section.id }} .reviews-sub{ text-align:center; color:var(--text-300); margin: 8px auto 16px; max-width:900px; font-size: clamp(14px, 1.4vw, 18px); }
 
@@ -163,7 +165,8 @@
     #ysa-hero-{{ section.id }} .rev-stars svg{ width:16px; height:16px; }
 
     /* ===== FOOTER (YSACheats / blue theme) ===== */
-    #ysa-hero-{{ section.id }} .ysa-footer{ width:100%; margin: var(--gap-footer) 0 0; border-top:1px solid rgba(18,180,255,.25); background:#0b1226; box-shadow: 0 -12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .footer-wrap{ background:#0b1226; padding: var(--gap-footer) 0 0; box-shadow: 0 -12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
+    #ysa-hero-{{ section.id }} .ysa-footer{ width:100%; margin:0; border-top:1px solid rgba(18,180,255,.25); }
     #ysa-hero-{{ section.id }} .ysa-footer .inner{ width:min(1280px, 94vw); margin:0 auto; padding:36px 0 22px; display:grid; gap:24px; }
     @media (min-width: 960px){ #ysa-hero-{{ section.id }} .ysa-footer .inner{ grid-template-columns: 1.4fr 1fr 1fr; align-items:start; } }
     #ysa-hero-{{ section.id }} .f-logo{ font-family:"Orbitron",sans-serif; font-weight:800; line-height:1; font-size: clamp(22px, 2vw, 28px); letter-spacing:.5px; }
@@ -232,8 +235,9 @@
   <div class="ysa-divider ysa-divider--tight" aria-hidden="true"></div>
 
   <!-- FEATURED (up to chosen count) -->
-  <div class="featured">
-    <div class="head">
+  <div class="featured-wrap">
+    <div class="featured">
+      <div class="head">
       <h2 class="title">{{ section.settings.featured_heading | default: 'Featured Products' }}</h2>
       {% if section.settings.view_all_link != blank %}
         <div class="right"><a class="view-all" href="{{ section.settings.view_all_link | escape }}">{{ section.settings.view_all_label | default: 'View all products' }}</a></div>
@@ -325,6 +329,7 @@
           {% endif %}
         </article>
       {% endfor %}
+      </div>
     </div>
   </div>
 
@@ -355,7 +360,8 @@
 
   <!-- REVIEWS (auto-scroll) -->
   {% if section.settings.reviews_show %}
-    <div class="reviews" aria-labelledby="rev-title-{{ section.id }}" style="--rev-dur: {{ section.settings.reviews_speed_sec | default: 40 }}s">
+    <div class="reviews-wrap">
+      <div class="reviews" aria-labelledby="rev-title-{{ section.id }}" style="--rev-dur: {{ section.settings.reviews_speed_sec | default: 40 }}s">
       <h2 id="rev-title-{{ section.id }}" class="reviews-title">What Our Customers Say</h2>
       <p class="reviews-sub">Thousands of gamers trust Speed Services for their gaming advantage.</p>
 
@@ -420,6 +426,7 @@
           {% endfor %}
         </div>
       </div>
+      </div>
     </div>
   {% endif %}
 
@@ -427,6 +434,7 @@
   <div class="ysa-divider" aria-hidden="true"></div>
 
   <!-- FOOTER -->
+<div class="footer-wrap">
   <footer class="ysa-footer" aria-label="Site footer">
     <div class="inner">
       <div><div class="f-logo"><span class="ysa">YSA</span><span class="cheats">Cheats</span></div></div>
@@ -456,7 +464,8 @@
         <a class="credit-pill" href="{{ section.settings.footer_credit_url | default: '#' | escape }}">🔧 {{ section.settings.footer_credit_label | default: 'YSACheats' }}</a>
       </div>
     </div>
-  </footer>
+</footer>
+</div>
 
   <!-- Scripts -->
   <script>
