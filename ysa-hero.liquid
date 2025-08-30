@@ -29,9 +29,9 @@
       position:fixed;pointer-events:none;z-index:9999;
     }
     #ysa-hero-{{ section.id }} .cursor-wrench{
-      width:28px;height:28px;transform:translate(-50%,-50%);color:#4fdcff;filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
+      width:32px;height:32px;transform:translate(-50%,-50%);color:#4fdcff;filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
     }
-    #ysa-hero-{{ section.id }} .cursor-wrench svg{width:100%;height:100%;stroke:currentColor;stroke-width:2;fill:none;}
+    #ysa-hero-{{ section.id }} .cursor-wrench svg{width:100%;height:100%;fill:currentColor;}
     #ysa-hero-{{ section.id }} .cursor-bit{
       font-family:"Courier New",monospace;font-size:16px;color:#4fdcff;transform:translate(-50%,-50%);animation:ysa-bit-fade-{{ section.id }} 1s linear forwards;text-shadow:0 0 6px rgba(79,220,255,.6);
     }
@@ -506,10 +506,7 @@
       const canvas = document.getElementById('ysa-matrix-{{ section.id }}');
       const wrench=document.createElement('div');
       wrench.className='cursor-wrench';
-      wrench.innerHTML='<svg viewBox="0 0 24 24"><path d="'
-        +'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77'
-        +'a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91'
-        +'a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
+      wrench.innerHTML='<svg viewBox="0 0 24 24"><path transform="rotate(45 12 12)" d="M0.1 11.5c1.3 1.3 3.4 1.3 4.7 0l1.6-1.6 3.6 3.6-1.6 1.6c-1.3 1.3-1.3 3.4 0 4.7s3.4 1.3 4.7 0l5.6-5.6c.7-.7.7-1.9 0-2.6l-.8-.8.6-.6a4 4 0 0 0 0-5.7L17.7.7a4 4 0 0 0-5.7 0l-.6.6-.8-.8c-.7-.7-1.9-.7-2.6 0L2.4 6.1c-1.3 1.3-1.3 3.4 0 4.7Z"/></svg>';
       wrench.style.opacity=0;
       root.appendChild(wrench);
       root.addEventListener('pointermove',e=>{
