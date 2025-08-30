@@ -31,7 +31,7 @@
     #ysa-hero-{{ section.id }} canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(79,220,255,.35));}
 
     /* HERO */
-    #ysa-hero-{{ section.id }} .hero-viewport{position:relative;min-height:calc(100svh - var(--header-offset,0px));display:flex;flex-direction:column;width:100%;padding-bottom:clamp(60px,8vh,100px);}
+    #ysa-hero-{{ section.id }} .hero-viewport{position:relative;min-height:calc(100svh - var(--header-offset,0px));display:flex;flex-direction:column;width:100%;}
     #ysa-hero-{{ section.id }} .hero-viewport .ysa-center{flex:1;display:flex;flex-direction:column;justify-content:center;}
     #ysa-hero-{{ section.id }} .ysa-center{ text-align:center; width:min(1100px, 92vw); padding: clamp(20px, 3vw, 40px); margin: 0 auto; }
     #ysa-hero-{{ section.id }} h1{
@@ -77,7 +77,7 @@
     }
 
     /* TICKER */
-    #ysa-hero-{{ section.id }} .ysa-ticker{ position:absolute; bottom:0; left:0; width:100%; overflow:hidden; z-index:1; padding: clamp(20px, 4vh, 40px) 0 12px; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
+    #ysa-hero-{{ section.id }} .ysa-ticker{ width:100%; overflow:hidden; z-index:1; padding: clamp(20px, 4vh, 40px) 0 12px; margin-top:auto; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
     #ysa-hero-{{ section.id }} .ysa-ticker .lane{ display:flex; gap:14px; width:max-content; padding-left: 2vw; animation: ysa-marquee-{{ section.id }} 30s linear infinite; }
     #ysa-hero-{{ section.id }} .ysa-ticker .wrap{ display:flex; width:max-content; }
     @keyframes ysa-marquee-{{ section.id }}{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
@@ -89,12 +89,13 @@
     #ysa-hero-{{ section.id }} .featured-wrap{ position:relative; overflow:hidden; background:#0b1226; padding: var(--gap-featured) 0 clamp(36px, 8vh, 72px); box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); }
     #ysa-hero-{{ section.id }} .featured-wrap::before,
     #ysa-hero-{{ section.id }} .reviews-wrap::before{
-      content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .3s ease;
+      content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
       background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
       background-size:24px 24px;
+      transform-origin:var(--ox,50%) var(--oy,50%);
+      transform:perspective(600px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+      transition:transform .15s ease;
     }
-    #ysa-hero-{{ section.id }} .featured-wrap:hover::before,
-    #ysa-hero-{{ section.id }} .reviews-wrap:hover::before{opacity:1;}
     #ysa-hero-{{ section.id }} .featured{ position:relative; z-index:1; width:min(1280px, 94vw); margin:0 auto; padding: clamp(24px, 3vw, 40px); }
     #ysa-hero-{{ section.id }} .featured .head{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-bottom: clamp(18px, 3vh, 28px); }
     #ysa-hero-{{ section.id }} .featured .title{ grid-column:1 / -1; text-align:center; margin:0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(28px, 3.8vw, 48px); letter-spacing:.4px; background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
@@ -487,9 +488,30 @@
         sizeCanvas(); requestAnimationFrame(draw); window.addEventListener('resize', sizeCanvas);
       }
       // relative time + profanity mask
-      const wrap = document.getElementById('rev-wrap-{{ section.id }}'); if(!wrap) return;
-      wrap.querySelectorAll('.rev-time').forEach(el=>{ const t=Date.parse(el.getAttribute('data-datetime')||''); if(!isNaN(t)){ const diff=Math.max(1,Math.floor((Date.now()-t)/1000)); const u=[["year",31536000],["month",2592000],["week",604800],["day",86400],["hour",3600],["minute",60]]; let out="just now"; for(const [n,s] of u){const v=Math.floor(diff/s); if(v>=1){out=`${v} ${n}${v>1?'s':''} ago`;break}} el.textContent=out; }});
-      if("{{ section.settings.mask_profanity }}".toLowerCase()==="true"){ const banned=["nigger","niggers","nigga","niggas","fuck","shit","bitch"]; wrap.querySelectorAll('.rev-body').forEach(el=>{ let t=el.textContent; banned.forEach(w=>{ const re=new RegExp(`\\b${w}\\b`,'gi'); t=t.replace(re, m=>m[0]+"•".repeat(Math.max(0,m.length-2))+m[m.length-1]); }); el.textContent=t; }); }
+      const wrap = document.getElementById('rev-wrap-{{ section.id }}'); if(wrap){
+        wrap.querySelectorAll('.rev-time').forEach(el=>{ const t=Date.parse(el.getAttribute('data-datetime')||''); if(!isNaN(t)){ const diff=Math.max(1,Math.floor((Date.now()-t)/1000)); const u=[["year",31536000],["month",2592000],["week",604800],["day",86400],["hour",3600],["minute",60]]; let out="just now"; for(const [n,s] of u){const v=Math.floor(diff/s); if(v>=1){out=`${v} ${n}${v>1?'s':''} ago`;break}} el.textContent=out; }});
+        if("{{ section.settings.mask_profanity }}".toLowerCase()==="true"){ const banned=["nigger","niggers","nigga","niggas","fuck","shit","bitch"]; wrap.querySelectorAll('.rev-body').forEach(el=>{ let t=el.textContent; banned.forEach(w=>{ const re=new RegExp(`\\b${w}\\b`,'gi'); t=t.replace(re, m=>m[0]+"•".repeat(Math.max(0,m.length-2))+m[m.length-1]); }); el.textContent=t; }); }
+      }
+      const grids = root.querySelectorAll('.featured-wrap, .reviews-wrap');
+      grids.forEach(sec=>{
+        sec.addEventListener('mousemove', e=>{
+          const r=sec.getBoundingClientRect();
+          const x=e.clientX - r.left;
+          const y=e.clientY - r.top;
+          const rx=((y - r.height/2)/r.height)*8;
+          const ry=-((x - r.width/2)/r.width)*8;
+          sec.style.setProperty('--rx', rx.toFixed(2)+'deg');
+          sec.style.setProperty('--ry', ry.toFixed(2)+'deg');
+          sec.style.setProperty('--ox', (x/r.width*100).toFixed(2)+'%');
+          sec.style.setProperty('--oy', (y/r.height*100).toFixed(2)+'%');
+        });
+        sec.addEventListener('mouseleave', ()=>{
+          sec.style.setProperty('--rx','0deg');
+          sec.style.setProperty('--ry','0deg');
+          sec.style.setProperty('--ox','50%');
+          sec.style.setProperty('--oy','50%');
+        });
+      });
     })();
   </script>
 </section>
