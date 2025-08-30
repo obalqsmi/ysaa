@@ -24,17 +24,18 @@
     #ysa-hero-{{ section.id }}, #ysa-hero-{{ section.id }} *{
       cursor:none;
     }
-    #ysa-hero-{{ section.id }} .cursor-dot,
+    #ysa-hero-{{ section.id }} .cursor-wrench,
     #ysa-hero-{{ section.id }} .cursor-bit{
       position:fixed;pointer-events:none;z-index:9999;
     }
-    #ysa-hero-{{ section.id }} .cursor-dot{
-      width:4px;height:4px;border-radius:50%;background:#4fdcff;transform:translate(-50%,-50%);
+    #ysa-hero-{{ section.id }} .cursor-wrench{
+      width:28px;height:28px;transform:translate(-50%,-50%);color:#4fdcff;filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
     }
+    #ysa-hero-{{ section.id }} .cursor-wrench svg{width:100%;height:100%;stroke:currentColor;stroke-width:2;fill:none;}
     #ysa-hero-{{ section.id }} .cursor-bit{
-      font-family:"Courier New",monospace;font-size:10px;color:#4fdcff;transform:translate(-50%,-50%);animation:ysa-bit-fade-{{ section.id }} 1s linear forwards;
+      font-family:"Courier New",monospace;font-size:16px;color:#4fdcff;transform:translate(-50%,-50%);animation:ysa-bit-fade-{{ section.id }} 1s linear forwards;text-shadow:0 0 6px rgba(79,220,255,.6);
     }
-    @keyframes ysa-bit-fade-{{ section.id }}{to{opacity:0;transform:translate(-50%,-50%) translateY(8px);}}
+    @keyframes ysa-bit-fade-{{ section.id }}{to{opacity:0;transform:translate(-50%,-50%) translateY(12px);}}
     #ysa-hero-{{ section.id }}::before{
       content:"";position:absolute;inset:-10%;opacity:.15;z-index:-3;
       background: linear-gradient(transparent 96%, rgba(79,220,255,.2) 96%) 0 0/100% 30px,
@@ -503,14 +504,18 @@
     (function(){
       const root = document.getElementById('ysa-hero-{{ section.id }}');
       const canvas = document.getElementById('ysa-matrix-{{ section.id }}');
-      const dot=document.createElement('div');
-      dot.className='cursor-dot';
-      dot.style.opacity=0;
-      root.appendChild(dot);
+      const wrench=document.createElement('div');
+      wrench.className='cursor-wrench';
+      wrench.innerHTML='<svg viewBox="0 0 24 24"><path d="'
+        +'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77'
+        +'a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91'
+        +'a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
+      wrench.style.opacity=0;
+      root.appendChild(wrench);
       root.addEventListener('pointermove',e=>{
-        dot.style.opacity=1;
-        dot.style.left=e.clientX+'px';
-        dot.style.top=e.clientY+'px';
+        wrench.style.opacity=1;
+        wrench.style.left=e.clientX+'px';
+        wrench.style.top=e.clientY+'px';
         const bit=document.createElement('span');
         bit.className='cursor-bit';
         bit.textContent=Math.random()>.5?'1':'0';
@@ -519,8 +524,8 @@
         root.appendChild(bit);
         setTimeout(()=>bit.remove(),1000);
       });
-      root.addEventListener('pointerleave',()=>{dot.style.opacity=0;});
-      root.addEventListener('pointerenter',()=>{dot.style.opacity=1;});
+      root.addEventListener('pointerleave',()=>{wrench.style.opacity=0;});
+      root.addEventListener('pointerenter',()=>{wrench.style.opacity=1;});
       if(canvas && root){
         const ctx = canvas.getContext('2d'); let w,h,fontSize,columns,drops,lastTime=0; const speedFactor=.95;
         function sizeCanvas(){ const dpr=Math.max(1,window.devicePixelRatio||1); w=window.innerWidth; h=root.scrollHeight; canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); fontSize=Math.max(12,Math.floor(w/90)); columns=Math.ceil(w/fontSize); drops=Array.from({length:columns},()=>Math.floor(Math.random()*h/fontSize)); ctx.font=fontSize+"px Orbitron, monospace"; }
