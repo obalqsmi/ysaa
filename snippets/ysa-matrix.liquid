@@ -1,14 +1,11 @@
 <canvas id="ysa-matrix"></canvas>
-<style>
-  #ysa-matrix{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(79,220,255,.35));}
-</style>
 <script>
 (function(){
   const canvas=document.getElementById('ysa-matrix');
   if(!canvas) return;
   const ctx=canvas.getContext('2d');
   let w,h,fontSize,columns,drops;
-  const speed = 0.5; // lower = slower
+  const speed = parseFloat(getComputedStyle(canvas).getPropertyValue('--matrix-speed')) || 0.3;
   function size(){
     const dpr=Math.max(1,window.devicePixelRatio||1);
     w=window.innerWidth;h=document.body.scrollHeight;

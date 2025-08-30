@@ -1,0 +1,15 @@
+<section class="account">
+  <h1>Activate account</h1>
+  {% form 'activate_customer_password' %}
+    {% if form.errors %}{{ form.errors | default_errors }}{% endif %}
+    <div class="field">
+      <label for="ActivatePassword">Password</label>
+      <input id="ActivatePassword" type="password" name="customer[password]">
+    </div>
+    <div class="field">
+      <label for="ActivatePasswordConfirmation">Confirm</label>
+      <input id="ActivatePasswordConfirmation" type="password" name="customer[password_confirmation]">
+    </div>
+    <button type="submit" class="btn">Activate</button>
+  {% endform %}
+</section>
