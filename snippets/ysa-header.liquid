@@ -75,5 +75,19 @@
     function onScroll(){header.classList.toggle('scrolled', window.scrollY>0);}
     window.addEventListener('scroll', onScroll);
     onScroll();
+
+    // Force navigation to the full cart page and suppress any drawer UI
+    const cartLink = header.querySelector('a[aria-label="Cart"]');
+    if(cartLink){
+      cartLink.addEventListener('click', function(e){
+        e.preventDefault();
+        window.location.href = '/cart';
+      });
+    }
+
+    const cartDrawer = document.getElementById('CartDrawer') || document.querySelector('cart-drawer');
+    if(cartDrawer){
+      cartDrawer.style.display = 'none';
+    }
   })();
 </script>
