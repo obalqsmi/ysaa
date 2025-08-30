@@ -1,0 +1,15 @@
+<section class="account">
+  <h1>My account</h1>
+  <p>{{ customer.email }}</p>
+  <h2>Orders</h2>
+  {% if customer.orders.size > 0 %}
+    <ul>
+      {% for order in customer.orders %}
+        <li><a href="{{ order.customer_url }}">Order {{ order.name }} - {{ order.created_at | date: "%b %d, %Y" }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No orders.</p>
+  {% endif %}
+  <a href="/account/logout" class="btn">Log out</a>
+</section>

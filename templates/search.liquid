@@ -1,0 +1,20 @@
+<section class="search">
+  <h1>Search results for "{{ search.terms }}"</h1>
+  {% if search.results_count > 0 %}
+    <ul class="catalog__grid" role="list">
+      {% for item in search.results %}
+        {% if item.object_type == 'product' %}
+          <li class="catalog__card">
+            <a href="{{ item.url }}" class="catalog__link">
+              {{ item | img_url: '600x600', crop: 'center' | img_tag: item.title, class: 'catalog__image', loading: 'lazy' }}
+              <h3 class="catalog__title">{{ item.title }}</h3>
+              <p class="catalog__price">{{ item.price | money }}</p>
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+</section>

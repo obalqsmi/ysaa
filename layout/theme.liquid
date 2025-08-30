@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    {{ content_for_header }}
+    {{ 'ysa-matrix.css' | asset_url | stylesheet_tag }}
+    {% render 'ysa-theme' %}
+  </head>
+  <body>
+    {% render 'ysa-matrix' %}
+    {% render 'ysa-header' %}
+    {{ content_for_layout }}
+  </body>
+</html>

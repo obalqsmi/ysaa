@@ -1,0 +1,16 @@
+<section class="account">
+  <h1>Login</h1>
+  {% form 'customer_login' %}
+    {% if form.errors %}{{ form.errors | default_errors }}{% endif %}
+    <div class="field">
+      <label for="CustomerEmail">Email</label>
+      <input id="CustomerEmail" type="email" name="customer[email]" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="CustomerPassword">Password</label>
+      <input id="CustomerPassword" type="password" name="customer[password]" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn">Login</button>
+    <a href="/account/register" class="btn btn--secondary">Create account</a>
+  {% endform %}
+</section>

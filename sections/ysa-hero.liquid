@@ -1,5 +1,3 @@
-{% render "ysa-header" %}
-
 <section id="ysa-hero-{{ section.id }}" class="ysa-hero" style="--header-offset: {{ section.settings.header_offset | default: 0 }}px;">
 
   <style>
@@ -90,8 +88,8 @@
 
     /* TICKER */
     #ysa-hero-{{ section.id }} .ysa-ticker{ width:100%; overflow:hidden; z-index:1; padding: clamp(20px, 4vh, 40px) 0 12px; margin-top:auto; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
-    #ysa-hero-{{ section.id }} .ysa-ticker .lane{ display:flex; gap:14px; width:max-content; padding-left: 2vw; animation: ysa-marquee-{{ section.id }} 30s linear infinite; }
-    #ysa-hero-{{ section.id }} .ysa-ticker .wrap{ display:flex; width:max-content; }
+    #ysa-hero-{{ section.id }} .ysa-ticker .wrap{ display:flex; width:max-content; padding-left: 2vw; animation: ysa-marquee-{{ section.id }} 30s linear infinite; }
+    #ysa-hero-{{ section.id }} .ysa-ticker .lane{ display:flex; gap:14px; }
     @keyframes ysa-marquee-{{ section.id }}{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
     #ysa-hero-{{ section.id }} .ysa-ticker .pill{ display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:999px; white-space:nowrap; background: rgba(6,16,34,.65); border:1px solid rgba(134,242,255,.14); box-shadow: inset 0 0 12px rgba(79,220,255,.08); color:#a6dfff; font-size:14px; }
     #ysa-hero-{{ section.id }} .ysa-ticker .icon{ width:16px; height:16px; display:inline-block; }
