@@ -24,14 +24,14 @@
     #ysa-hero-{{ section.id }}, #ysa-hero-{{ section.id }} *{
       cursor:none;
     }
-    #ysa-hero-{{ section.id }} .cursor-wrench,
+    #ysa-hero-{{ section.id }} .cursor-cross,
     #ysa-hero-{{ section.id }} .cursor-bit{
       position:fixed;pointer-events:none;z-index:9999;
     }
-    #ysa-hero-{{ section.id }} .cursor-wrench{
+    #ysa-hero-{{ section.id }} .cursor-cross{
       width:32px;height:32px;transform:translate(-50%,-50%);color:#4fdcff;filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
     }
-    #ysa-hero-{{ section.id }} .cursor-wrench svg{width:100%;height:100%;fill:currentColor;}
+    #ysa-hero-{{ section.id }} .cursor-cross svg{width:100%;height:100%;}
     #ysa-hero-{{ section.id }} .cursor-bit{
       font-family:"Courier New",monospace;font-size:16px;color:#4fdcff;transform:translate(-50%,-50%);animation:ysa-bit-fade-{{ section.id }} 1s linear forwards;text-shadow:0 0 6px rgba(79,220,255,.6);
     }
@@ -504,15 +504,15 @@
     (function(){
       const root = document.getElementById('ysa-hero-{{ section.id }}');
       const canvas = document.getElementById('ysa-matrix-{{ section.id }}');
-      const wrench=document.createElement('div');
-      wrench.className='cursor-wrench';
-      wrench.innerHTML='<svg viewBox="0 0 24 24"><path transform="rotate(45 12 12)" d="M0.1 11.5c1.3 1.3 3.4 1.3 4.7 0l1.6-1.6 3.6 3.6-1.6 1.6c-1.3 1.3-1.3 3.4 0 4.7s3.4 1.3 4.7 0l5.6-5.6c.7-.7.7-1.9 0-2.6l-.8-.8.6-.6a4 4 0 0 0 0-5.7L17.7.7a4 4 0 0 0-5.7 0l-.6.6-.8-.8c-.7-.7-1.9-.7-2.6 0L2.4 6.1c-1.3 1.3-1.3 3.4 0 4.7Z"/></svg>';
-      wrench.style.opacity=0;
-      root.appendChild(wrench);
+      const cross=document.createElement('div');
+      cross.className='cursor-cross';
+      cross.innerHTML='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="16" r="6"/><line x1="16" y1="2" x2="16" y2="8"/><line x1="16" y1="24" x2="16" y2="30"/><line x1="2" y1="16" x2="8" y2="16"/><line x1="24" y1="16" x2="30" y2="16"/><circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/></svg>';
+      cross.style.opacity=0;
+      root.appendChild(cross);
       root.addEventListener('pointermove',e=>{
-        wrench.style.opacity=1;
-        wrench.style.left=e.clientX+'px';
-        wrench.style.top=e.clientY+'px';
+        cross.style.opacity=1;
+        cross.style.left=e.clientX+'px';
+        cross.style.top=e.clientY+'px';
         const bit=document.createElement('span');
         bit.className='cursor-bit';
         bit.textContent=Math.random()>.5?'1':'0';
@@ -521,8 +521,8 @@
         root.appendChild(bit);
         setTimeout(()=>bit.remove(),1000);
       });
-      root.addEventListener('pointerleave',()=>{wrench.style.opacity=0;});
-      root.addEventListener('pointerenter',()=>{wrench.style.opacity=1;});
+      root.addEventListener('pointerleave',()=>{cross.style.opacity=0;});
+      root.addEventListener('pointerenter',()=>{cross.style.opacity=1;});
       if(canvas && root){
         const ctx = canvas.getContext('2d'); let w,h,fontSize,columns,drops,lastTime=0; const speedFactor=.95;
         function sizeCanvas(){ const dpr=Math.max(1,window.devicePixelRatio||1); w=window.innerWidth; h=root.scrollHeight; canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); fontSize=Math.max(12,Math.floor(w/90)); columns=Math.ceil(w/fontSize); drops=Array.from({length:columns},()=>Math.floor(Math.random()*h/fontSize)); ctx.font=fontSize+"px Orbitron, monospace"; }
