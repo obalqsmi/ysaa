@@ -1,0 +1,76 @@
+{% assign all_products = collections.all.products %}
+{% paginate all_products by 16 %}
+<section class="catalog">
+  <header class="catalog__controls">
+    <input type="search" id="catalog-search" class="input" placeholder="Search products" aria-label="Search products">
+    <select id="catalog-sort" class="select" aria-label="Sort products">
+      <option value="featured">Featured</option>
+      <option value="price-asc">Price ↑</option>
+      <option value="price-desc">Price ↓</option>
+      <option value="newest">Newest</option>
+    </select>
+    <label class="catalog__vendor-toggle"><input type="checkbox" id="show-vendor"> Show vendor</label>
+  </header>
+  {% if paginate.items.size > 0 %}
+    <ul class="catalog__grid" role="list">
+      {% for product in paginate.items %}
+        <li class="catalog__card" data-title="{{ product.title | escape | downcase }}" data-price="{{ product.price }}" data-date="{{ product.created_at | date: '%s' }}">
+          <a href="{{ product.url }}" class="catalog__link">
+            <div class="catalog__image-wrap">
+              {{ product.featured_image | img_url: '600x600', crop: 'center' | img_tag: product.featured_image.alt, class: 'catalog__image', loading: 'lazy' }}
+            </div>
+            <h3 class="catalog__title">{{ product.title }}</h3>
+            <p class="catalog__vendor">{{ product.vendor }}</p>
+            <p class="catalog__price">{{ product.price | money }}</p>
+            <span class="btn catalog__view">View</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if paginate.pages > 1 %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if paginate.previous %}<a href="{{ paginate.previous.url }}" class="prev" aria-label="Previous page">‹</a>{% endif %}
+        <span class="page-count">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+        {% if paginate.next %}<a href="{{ paginate.next.url }}" class="next" aria-label="Next page">›</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="catalog__empty">No products found.</p>
+  {% endif %}
+</section>
+<script>
+(function() {
+  const searchInput = document.getElementById('catalog-search');
+  const sortSelect = document.getElementById('catalog-sort');
+  const vendorToggle = document.getElementById('show-vendor');
+  const cards = Array.from(document.querySelectorAll('.catalog__card'));
+
+  function applyFilter() {
+    const q = searchInput.value.toLowerCase();
+    cards.forEach(card => {
+      const match = card.dataset.title.indexOf(q) > -1;
+      card.style.display = match ? '' : 'none';
+    });
+  }
+
+  function applySort() {
+    const type = sortSelect.value;
+    const grid = document.querySelector('.catalog__grid');
+    const sorted = cards.slice().sort((a, b) => {
+      if (type === 'price-asc') return a.dataset.price - b.dataset.price;
+      if (type === 'price-desc') return b.dataset.price - a.dataset.price;
+      if (type === 'newest') return b.dataset.date - a.dataset.date;
+      return 0;
+    });
+    sorted.forEach(card => grid.appendChild(card));
+  }
+
+  searchInput && searchInput.addEventListener('input', applyFilter);
+  sortSelect && sortSelect.addEventListener('change', applySort);
+  vendorToggle && vendorToggle.addEventListener('change', e => {
+    document.querySelectorAll('.catalog__vendor').forEach(v => v.style.display = e.target.checked ? '' : 'none');
+  });
+  vendorToggle && vendorToggle.dispatchEvent(new Event('change'));
+})();
+</script>
+{% endpaginate %}

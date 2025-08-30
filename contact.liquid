@@ -1,0 +1,56 @@
+<section class="contact">
+  <header class="contact__header">
+    <h1>Contact Support</h1>
+    <p>Need help? Submit the form to open a support ticket.</p>
+  </header>
+  <div class="contact__grid">
+    <div class="contact__form">
+      {% form 'contact' %}
+        {% if form.posted_successfully? %}
+          <p class="contact__success" tabindex="-1">Thanks for contacting us. We'll get back to you soon.</p>
+        {% else %}
+          {% if form.errors %}
+            <ul class="contact__errors" role="alert">
+              {% for field in form.errors %}
+                <li>{{ field | capitalize }} {{ form.errors.messages[field] }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          <div class="field">
+            <label for="ContactName">Name</label>
+            <input id="ContactName" type="text" name="contact[name]" value="{{ form.name }}" required>
+          </div>
+          <div class="field">
+            <label for="ContactEmail">Email</label>
+            <input id="ContactEmail" type="email" name="contact[email]" value="{{ form.email }}" required>
+          </div>
+          <div class="field">
+            <label for="ContactOrder">Order Number (optional)</label>
+            <input id="ContactOrder" type="text" name="contact[order]" value="{{ form.order }}">
+          </div>
+          <div class="field">
+            <label for="ContactSubject">Subject</label>
+            <input id="ContactSubject" type="text" name="contact[subject]" value="{{ form.subject }}" required>
+          </div>
+          <div class="field">
+            <label for="ContactMessage">Message</label>
+            <textarea id="ContactMessage" name="contact[body]" rows="6" required>{{ form.body }}</textarea>
+          </div>
+          <div class="field field--checkbox">
+            <input type="checkbox" id="ContactConsent" name="contact[consent]" required>
+            <label for="ContactConsent">I agree to the processing of my data</label>
+          </div>
+          {{ form | recaptcha }}
+          <button type="submit" class="btn">Submit</button>
+        {% endif %}
+      {% endform %}
+    </div>
+    <aside class="contact__info">
+      <h2>Open a Ticket</h2>
+      <p>Submitting the form will create a support ticket. Prefer email?</p>
+      <a href="mailto:support@example.com" class="btn">Send Email</a>
+      <p class="contact__discord"><a href="https://discord.gg/example" class="link">Join our Discord</a></p>
+      <p class="contact__hours">Support hours: Mon-Fri 9am–5pm</p>
+    </aside>
+  </div>
+</section>

@@ -1,0 +1,138 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+<section class="product">
+  <div class="product__main">
+    <div class="product__gallery" aria-label="Product media">
+      <div class="product__media">
+        {{ current_variant.featured_media | img_url: '800x800', crop: 'center' | img_tag: current_variant.featured_media.alt, id: 'ProductMainImage', class: 'product__image', loading: 'lazy' }}
+      </div>
+      <ul class="product__thumbs" role="list">
+        {% for media in product.media %}
+          <li>
+            <button class="product__thumb" data-media-id="{{ media.id }}" aria-label="View {{ media.alt | escape }}">
+              {{ media | img_url: '100x100', crop: 'center' | img_tag: media.alt }}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="product__info">
+      <h1 class="product__title">{{ product.title }}</h1>
+      <div class="product__rating">{% if product.metafields.reviews.rating %}<span aria-label="Rated {{ product.metafields.reviews.rating }} out of 5">{{ product.metafields.reviews.rating }}★</span>{% else %}<span>No reviews</span>{% endif %}</div>
+      <p id="ProductPrice" class="product__price" aria-live="polite">{{ current_variant.price | money }}</p>
+      <form id="product-form-{{ product.id }}" action="/cart/add" method="post">
+        <input type="hidden" name="id" value="{{ current_variant.id }}" id="VariantId">
+        {% unless product.has_only_default_variant %}
+          {% for option in product.options_with_values %}
+            <fieldset class="product__options">
+              <legend>{{ option.name }}</legend>
+              {% for value in option.values %}
+                {% assign disabled = true %}
+                {% for variant in product.variants %}
+                  {% if variant.options[forloop.parent.index0] == value and variant.available %}
+                    {% assign disabled = false %}
+                  {% endif %}
+                {% endfor %}
+                <input type="radio" name="options[{{ option.name }}]" value="{{ value }}" id="Option-{{ option.name | handle }}-{{ forloop.index }}" {% if current_variant.options[forloop.parent.index0] == value %}checked{% endif %} {% if disabled %}disabled{% endif %}>
+                <label for="Option-{{ option.name | handle }}-{{ forloop.index }}">{{ value }}</label>
+              {% endfor %}
+            </fieldset>
+          {% endfor %}
+        {% endunless %}
+        <label for="Quantity-{{ product.id }}" class="visually-hidden">Quantity</label>
+        <input type="number" id="Quantity-{{ product.id }}" name="quantity" value="1" min="1" class="product__qty">
+        <div class="product__buttons">
+          <button type="submit" class="btn">Add to Cart</button>
+          <button type="submit" name="checkout" class="btn btn--secondary">Buy Now</button>
+        </div>
+      </form>
+      <div class="product__badges" aria-label="Trust badges">
+        <img src="/badges/secure.svg" alt="Secure checkout">
+        <img src="/badges/support.svg" alt="24/7 support">
+        <img src="/badges/guarantee.svg" alt="Money-back guarantee">
+      </div>
+    </div>
+  </div>
+
+  <div class="product__details" role="tablist">
+    <button class="tab" id="tab-desc" aria-controls="panel-desc" aria-selected="true" role="tab">Description</button>
+    <button class="tab" id="tab-feat" aria-controls="panel-feat" role="tab">Features</button>
+    <button class="tab" id="tab-faq" aria-controls="panel-faq" role="tab">FAQ</button>
+    <div id="panel-desc" role="tabpanel" aria-labelledby="tab-desc">{{ product.description }}</div>
+    <div id="panel-feat" role="tabpanel" aria-labelledby="tab-feat" hidden>{{ product.metafields.custom.features }}</div>
+    <div id="panel-faq" role="tabpanel" aria-labelledby="tab-faq" hidden>{{ product.metafields.custom.faq }}</div>
+  </div>
+
+  <div class="product__sticky" data-sticky>
+    <span class="product__sticky-title">{{ product.title }}</span>
+    <span class="product__sticky-price" id="StickyPrice">{{ current_variant.price | money }}</span>
+    <button form="product-form-{{ product.id }}" type="submit" class="btn btn--full">Add to Cart</button>
+  </div>
+</section>
+<script>
+  const productData = {{ product | json }};
+  const form = document.getElementById('product-form-{{ product.id }}');
+  const priceEl = document.getElementById('ProductPrice');
+  const stickyPrice = document.getElementById('StickyPrice');
+  const variantIdInput = document.getElementById('VariantId');
+  const mainImage = document.getElementById('ProductMainImage');
+  const radios = form.querySelectorAll('input[type="radio"]');
+
+  function updateVariant() {
+    const selected = {};
+    radios.forEach(r => { if (r.checked) selected[r.name.replace('options[','').replace(']','')] = r.value; });
+    const variant = productData.variants.find(v => {
+      return Object.keys(selected).every((key, i) => v.options[i] === selected[key]);
+    });
+    if (!variant) return;
+    variantIdInput.value = variant.id;
+    priceEl.textContent = Shopify.formatMoney(variant.price);
+    stickyPrice.textContent = Shopify.formatMoney(variant.price);
+    if (variant.featured_media) {
+      mainImage.src = variant.featured_media.src;
+      mainImage.alt = variant.featured_media.alt;
+    }
+  }
+
+  radios.forEach(r => r.addEventListener('change', updateVariant));
+  document.querySelectorAll('.product__thumb').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const media = productData.media.find(m => m.id == btn.dataset.mediaId);
+      if (media) {
+        mainImage.src = media.src;
+        mainImage.alt = media.alt;
+      }
+    });
+  });
+
+  document.querySelectorAll('.product__details .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.product__details [role="tabpanel"]').forEach(p => p.hidden = true);
+      document.getElementById('panel-' + tab.id.split('-')[1]).hidden = false;
+      document.querySelectorAll('.product__details .tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+    });
+  });
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "image": {{ product.images | map: 'src' | json }},
+  "description": {{ product.description | strip_html | json }},
+  "sku": {{ current_variant.sku | json }},
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": {{ shop.currency | json }},
+    "price": {{ current_variant.price | divided_by: 100.0 }},
+    "availability": "https://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}",
+    "url": {{ product.url | json }}
+  }{% if product.metafields.reviews.rating %},
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ product.metafields.reviews.rating }},
+    "reviewCount": {{ product.metafields.reviews.rating_count | default: 0 }}
+  }
+  {% endif %}
+}
+</script>
