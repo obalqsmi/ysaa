@@ -24,14 +24,13 @@
     #ysa-hero-{{ section.id }}, #ysa-hero-{{ section.id }} *{
       cursor:none;
     }
-    #ysa-hero-{{ section.id }} .cursor-cross,
+    #ysa-hero-{{ section.id }} .cursor-symbol,
     #ysa-hero-{{ section.id }} .cursor-bit{
       position:fixed;pointer-events:none;z-index:9999;
     }
-    #ysa-hero-{{ section.id }} .cursor-cross{
-      width:32px;height:32px;transform:translate(-50%,-50%);color:#4fdcff;filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
+    #ysa-hero-{{ section.id }} .cursor-symbol{
+      width:26px;height:26px;transform:translate(-50%,-50%);color:#4fdcff;font-family:"Courier New",monospace;font-size:26px;text-shadow:0 0 8px rgba(79,220,255,.8);filter:drop-shadow(0 0 6px rgba(79,220,255,.6));
     }
-    #ysa-hero-{{ section.id }} .cursor-cross svg{width:100%;height:100%;}
     #ysa-hero-{{ section.id }} .cursor-bit{
       font-family:"Courier New",monospace;font-size:16px;color:#4fdcff;transform:translate(-50%,-50%);animation:ysa-bit-fade-{{ section.id }} 1s linear forwards;text-shadow:0 0 6px rgba(79,220,255,.6);
     }
@@ -504,25 +503,27 @@
     (function(){
       const root = document.getElementById('ysa-hero-{{ section.id }}');
       const canvas = document.getElementById('ysa-matrix-{{ section.id }}');
-      const cross=document.createElement('div');
-      cross.className='cursor-cross';
-      cross.innerHTML='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="16" cy="16" r="6"/><line x1="16" y1="2" x2="16" y2="8"/><line x1="16" y1="24" x2="16" y2="30"/><line x1="2" y1="16" x2="8" y2="16"/><line x1="24" y1="16" x2="30" y2="16"/><circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/></svg>';
-      cross.style.opacity=0;
-      root.appendChild(cross);
-      root.addEventListener('pointermove',e=>{
-        cross.style.opacity=1;
-        cross.style.left=e.clientX+'px';
-        cross.style.top=e.clientY+'px';
-        const bit=document.createElement('span');
-        bit.className='cursor-bit';
-        bit.textContent=Math.random()>.5?'1':'0';
-        bit.style.left=e.clientX+'px';
-        bit.style.top=e.clientY+'px';
-        root.appendChild(bit);
-        setTimeout(()=>bit.remove(),1000);
-      });
-      root.addEventListener('pointerleave',()=>{cross.style.opacity=0;});
-      root.addEventListener('pointerenter',()=>{cross.style.opacity=1;});
+        const symbol=document.createElement('div');
+        symbol.className='cursor-symbol';
+        symbol.style.opacity=0;
+        root.appendChild(symbol);
+        const chars='01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let active=false;
+        setInterval(()=>{ if(active){ symbol.textContent=chars[Math.floor(Math.random()*chars.length)]; symbol.style.opacity=(0.4+Math.random()*0.6).toFixed(2); } },80);
+        root.addEventListener('pointermove',e=>{
+          active=true;
+          symbol.style.left=e.clientX+'px';
+          symbol.style.top=e.clientY+'px';
+          const bit=document.createElement('span');
+          bit.className='cursor-bit';
+          bit.textContent=Math.random()>.5?'1':'0';
+          bit.style.left=e.clientX+'px';
+          bit.style.top=e.clientY+'px';
+          root.appendChild(bit);
+          setTimeout(()=>bit.remove(),1000);
+        });
+        root.addEventListener('pointerleave',()=>{active=false;symbol.style.opacity=0;});
+        root.addEventListener('pointerenter',()=>{active=true;symbol.style.opacity=1;});
       if(canvas && root){
         const ctx = canvas.getContext('2d'); let w,h,fontSize,columns,drops,lastTime=0; const speedFactor=.95;
         function sizeCanvas(){ const dpr=Math.max(1,window.devicePixelRatio||1); w=window.innerWidth; h=root.scrollHeight; canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); fontSize=Math.max(12,Math.floor(w/90)); columns=Math.ceil(w/fontSize); drops=Array.from({length:columns},()=>Math.floor(Math.random()*h/fontSize)); ctx.font=fontSize+"px Orbitron, monospace"; }
