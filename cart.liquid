@@ -28,7 +28,7 @@
                 <input id="updates_{{ item.key }}" class="qty" name="updates[{{ item.key }}]" value="{{ item.quantity }}" type="number" min="0">
               </div>
               <p class="cart__subtotal">{{ item.line_price | money }}</p>
-              <button type="submit" name="remove" value="{{ item.key }}" class="cart__remove" aria-label="Remove {{ item.title }}">×</button>
+              <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart__remove" aria-label="Remove {{ item.title }}">×</a>
             </div>
           </li>
         {% endfor %}
@@ -63,6 +63,8 @@
       .then(r=>r.json())
       .then(cart=>{
         document.getElementById('CartSubtotal').textContent = Shopify.formatMoney(cart.total_price);
+        const countEl = document.querySelector('.ysa-cart-count');
+        if(countEl) countEl.textContent = cart.item_count;
       });
   });
 })();

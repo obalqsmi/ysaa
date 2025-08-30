@@ -8,6 +8,7 @@
   if(!canvas) return;
   const ctx=canvas.getContext('2d');
   let w,h,fontSize,columns,drops;
+  const speed = 0.5; // lower = slower
   function size(){
     const dpr=Math.max(1,window.devicePixelRatio||1);
     w=window.innerWidth;h=document.body.scrollHeight;
@@ -29,7 +30,7 @@
       ctx.fillStyle='rgba(79,220,255,.9)';
       ctx.fillText(char,x,y);
       if(y>h&&Math.random()>.975) drops[i]=0;
-      drops[i]+=1;
+      drops[i]+=speed;
     }
     requestAnimationFrame(draw);
   }
