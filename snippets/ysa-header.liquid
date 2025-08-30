@@ -4,7 +4,13 @@
 
 <header id="ysa-header" class="ysa-header">
   <div class="ysa-header__inner">
-    <a href="/" class="ysa-logo">YSA</a>
+    {% if settings.logo != blank %}
+    <a href="/" class="ysa-logo" aria-label="{{ shop.name }}">
+      {{ settings.logo | image_url: height: 32 | image_tag: class: 'ysa-logo__img', alt: shop.name }}
+    </a>
+    {% else %}
+    <a href="/" class="ysa-logo ysa-logo--text">{{ shop.name }}</a>
+    {% endif %}
     <nav class="ysa-nav" aria-label="Main navigation">
       <a href="/">Home</a>
       <a href="/collections/all">Catalog</a>
@@ -48,8 +54,9 @@
   }
   #ysa-header.scrolled::after{opacity:1;}
   #ysa-header .ysa-header__inner{display:flex;align-items:center;gap:24px;padding:8px clamp(16px,2vw,32px);flex-wrap:nowrap;}
-  #ysa-header .ysa-logo{font-family:"Orbitron",sans-serif;font-weight:800;font-size:24px;text-decoration:none;flex:0 0 auto;
-    display:inline-block;color:var(--cyber-400);text-shadow:0 0 18px rgba(18,180,255,.35);}
+  #ysa-header .ysa-logo{flex:0 0 auto;display:inline-block;}
+  #ysa-header .ysa-logo--text{font-family:"Orbitron",sans-serif;font-weight:800;font-size:24px;text-decoration:none;color:var(--cyber-400);text-shadow:0 0 18px rgba(18,180,255,.35);}
+  #ysa-header .ysa-logo__img{display:block;max-height:32px;}
   #ysa-header .ysa-nav{display:flex;gap:16px;flex:0 0 auto;white-space:nowrap;}
   #ysa-header .ysa-nav a{text-decoration:none;color:var(--text-300);font-weight:500;font-size:16px;transition:color .2s ease;}
   #ysa-header .ysa-nav a:hover{color:#fff;}
@@ -58,10 +65,9 @@
     background:linear-gradient(180deg,rgba(6,16,34,.72),rgba(6,12,25,.54));color:var(--text-100);}
   #ysa-header .ysa-search input::placeholder{color:var(--text-300);}
   #ysa-header .ysa-header__actions{display:flex;gap:12px;}
-  #ysa-header .ysa-icon{width:34px;height:34px;border:1px solid rgba(134,242,255,.35);border-radius:8px;display:inline-flex;
-    align-items:center;justify-content:center;color:var(--cyber-400);transition:transform .2s ease,border-color .2s ease,color .2s ease;
-    text-decoration:none;}
-  #ysa-header .ysa-icon:hover{transform:translateY(-2px);border-color:rgba(134,242,255,.7);color:#fff;}
+  #ysa-header .ysa-icon{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;color:var(--cyber-400);transition:transform .2s ease,color .2s ease;text-decoration:none;}
+  #ysa-header .ysa-icon:hover{transform:translateY(-2px);color:#fff;}
+  #ysa-header .ysa-icon svg{width:24px;height:24px;}
 </style>
 <script>
   (function(){

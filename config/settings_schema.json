@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Theme settings",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo" }
+    ]
+  }
+]
