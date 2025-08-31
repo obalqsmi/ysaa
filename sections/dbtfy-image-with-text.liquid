@@ -1,0 +1,517 @@
+{%- liquid
+  assign show_on_desktop = section.settings.show_on_desktop
+  assign show_on_mobile = section.settings.show_on_mobile
+  assign section_style = section.settings.section_style
+  assign container_size = section.settings.container_size
+  assign image = section.settings.image
+  assign image_link = section.settings.image_link
+  assign image_size = section.settings.image_size
+  assign image_position = section.settings.image_position
+  assign image_position_mobile = section.settings.image_position_mobile
+  assign text_position = section.settings.text_position
+  assign text_alignment = section.settings.text_alignment
+  assign text_alignment_mobile = section.settings.text_alignment_mobile
+  assign text_overlap = section.settings.text_overlap
+  assign images_loading_type = section.settings.images_loading_type
+  assign images_animation = section.settings.images_animation
+  assign color_scheme = section.settings.color_scheme
+
+  if text_overlap != 'overlap'
+    if text_position == 'start'
+      assign spacing = 'pt-lg-0'
+    elsif text_position == 'end'
+      assign spacing = 'pb-lg-0'
+    endif
+  endif
+
+
+  assign image_size_class = 'col-md-6'
+  assign content_size_class = 'col-md-6'
+
+  if text_overlap != 'overlap'
+    case image_size
+      when 'small'
+        assign image_size_class = 'col-md-4'
+        assign content_size_class = 'col-md-8'
+
+      when 'large'
+        assign image_size_class = 'col-md-8'
+        assign content_size_class = 'col-md-4'
+
+    endcase
+  endif
+
+
+  capture visibility_class
+    render 'section-visibility-class', show_on_mobile: show_on_mobile, show_on_desktop: show_on_desktop
+  endcapture
+-%}
+
+{%- capture section_settings -%}
+  {
+    "imagePosition": {{ image_position | json }},
+    "imagesAnimation": {{ images_animation | json }}
+  }
+{%- endcapture -%}
+
+<div class="section section--{{ section_style }} {{ visibility_class }} color-{{ color_scheme }}{% if container_size == 'container-full' %} section--no-spacing{% endif %}" data-section-settings='{{ section_settings }}' >
+  <div class="{{ container_size }}">
+    <div class="row gx-0 gy-3 gy-md-0 {{ text_position }}{% if image_position == 'right' %} flex-row-reverse{% endif %}{% if image_position_mobile == 'bottom' %} reverse{% endif %}{% if text_overlap == 'overlap' %} text-overlap{% endif %}">
+      <div class="spacer-top"></div>
+
+      <div class="{{ image_size_class }} d-flex align-items-center justify-content-end {{ images_animation }}-{{image_position}} {% if image_position == 'right' %}image-position-right{% endif %}">
+        {%- if image != blank -%}
+          {%- assign width_ratio = 100.0 | divided_by: 50 -%}
+          {%- assign maximum_image_width = settings.page_container_width | divided_by: width_ratio -%}
+
+          {%- capture sizes -%}(max-width: 768px) 100vw, min({{ maximum_image_width | ceil }}px, 50vw){% endcapture %}
+
+          <div class="media-wrapper"
+               style="padding-top: {{ 1 | divided_by: image.aspect_ratio | times: 100 }}%;">
+            {%- if image_link != blank -%}
+              <a href="{{ image_link }}" aria-label="Click to open {{ image_link }} link">
+            {%- endif -%}
+
+              {{- image | image_url: width: image.width | image_tag: loading: images_loading_type, sizes: sizes, widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'media' -}}
+
+            {%- if image_link != blank -%}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          {{- 'image' | placeholder_svg_tag: 'placeholder-svg' -}}
+        {%- endif -%}
+      </div>
+
+      <div class="{{ content_size_class }} d-flex flex-column justify-content-{{ text_position }} {{ text_alignment }} {{ text_alignment_mobile }} {% if text_overlap == "overlap" %}content-overlap{% endif %}">
+        <div class="row gx-0 gy-3 p-md-4 p-lg-5 {{ spacing }}{% if container_size == 'container-full' %} px-3 pb-3{% endif %}">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'heading' -%}
+                {%- liquid
+                  assign heading = block.settings.heading
+                -%}
+
+                {%- if heading != blank -%}
+                  <h2 class="h2 heading" style="font-size: {{ block.settings.heading_size }}px;">{{ heading | escape }}</h2>
+                {%- endif -%}
+
+              {%- when 'text' -%}
+                {%- liquid
+                  assign text = block.settings.text
+                  assign text_size = block.settings.text_size
+                -%}
+
+                {%- if text != blank -%}
+                  <div class="rte{% if text_size == 'large' %} sm:text-lg{% endif %}">{{ text }}</div>
+                {%- endif -%}
+
+              {%- when 'button' -%}
+                {%- liquid
+                  assign button_label = block.settings.button_label
+                  assign button_link = block.settings.button_link
+                  assign button_style = block.settings.button_style
+                -%}
+
+                {%- if button_label != blank and button_link != blank -%}
+                  <div>
+                    <a href="{{ button_link }}" class="btn {{ button_style }}">{{ button_label }}</a>
+                  </div>
+                {%- endif -%}
+
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="spacer-bottom"></div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.image_with_text.name",
+  "class": "dbtfy-image-with-text",
+  "disabled_on": {
+    "groups": [
+      "custom.widgets",
+      "custom.general",
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.addons.help_center.header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.image_with_text.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.enable_disable.content"
+    },
+    {
+      "type": "header",
+      "content": "t:general.addons.settings.header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "t:general.settings.show_on_desktop.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "t:general.settings.show_on_mobile.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "section_style",
+      "label": "t:general.settings.section_style.label",
+      "default": "blank",
+      "options": [
+        {
+          "value": "blank",
+          "label": "t:general.settings.section_style.options__1.label"
+        },
+        {
+          "value": "default",
+          "label": "t:general.settings.section_style.options__2.label"
+        },
+        {
+          "value": "border",
+          "label": "t:general.settings.section_style.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "container_size",
+      "label": "t:general.settings.container_size.label",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "t:general.settings.container_size.options__2.label"
+        },
+        {
+          "value": "container-fluid",
+          "label": "t:general.settings.container_size.options__3.label"
+        },
+        {
+          "value": "container-full",
+          "label": "t:general.settings.container_size.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:general.settings.image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "Image size (desktop)",
+      "default": "medium",
+      "options": [
+        {
+          "label": "t:sections.main_list_collections.settings.collection_height.options__2.label",
+          "value": "small"
+        },
+        {
+          "label": "t:sections.main_list_collections.settings.collection_height.options__3.label",
+          "value": "medium"
+        },
+        {
+          "label": "t:sections.main_list_collections.settings.collection_height.options__4.label",
+          "value": "large"
+        }
+      ]
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "t:general.settings.image_link.label"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Desktop image placement",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Mobile image placement",
+      "default": "top",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Desktop content position",
+      "default": "center",
+      "options": [
+        {
+          "value": "start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "end",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Desktop text alignment",
+      "default": "sm:text-start",
+      "options": [
+        {
+          "value": "sm:text-start",
+          "label": "t:general.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "sm:text-center",
+          "label": "t:general.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "sm:text-end",
+          "label": "t:general.settings.text_alignment.options__3.label"
+        },
+        {
+          "value": "sm:text-justify",
+          "label": "t:general.settings.text_alignment.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment_mobile",
+      "label": "Mobile Text alignment",
+      "default": "text-start",
+      "options": [
+        {
+          "value": "text-start",
+          "label": "t:general.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "text-center",
+          "label": "t:general.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "text-end",
+          "label": "t:general.settings.text_alignment.options__3.label"
+        },
+        {
+          "value": "text-justify",
+          "label": "t:general.settings.text_alignment.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_overlap",
+      "label": "Content layout",
+      "default": "",
+      "options": [
+        {
+          "value": "",
+          "label": "No overlap"
+        },
+        {
+          "value": "overlap",
+          "label": "Overlap"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.settings.images_loading.header.content"
+    },
+    {
+      "type": "select",
+      "id": "images_loading_type",
+      "label": "t:general.settings.images_loading.images_loading_type.label",
+      "default": "lazy",
+      "options": [
+        {
+          "value": "lazy",
+          "label": "t:general.settings.images_loading.images_loading_type.options__1.label"
+        },
+        {
+          "value": "eager",
+          "label": "t:general.settings.images_loading.images_loading_type.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Animations"
+    },
+    {
+      "type": "select",
+      "id": "images_animation",
+      "label": "Image behavior",
+      "default": "ambient-movement",
+      "options": [
+        {
+          "value": "no-animation",
+          "label": "No animation"
+        },
+        {
+          "value": "ambient-movement",
+          "label": "Ambient movement"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom in on scroll"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "t:sections.image_with_text.blocks.heading.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:general.settings.heading.label",
+          "default": "Image with text"
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "Heading font size",
+          "min": 10,
+          "max": 60,
+          "step": 2,
+          "unit": "px",
+          "default": 20
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.image_with_text.blocks.text.name",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:general.settings.text.label",
+          "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+        },
+        {
+          "type": "select",
+          "id": "text_size",
+          "label": "t:sections.image_with_text.blocks.text.settings.text_size.label",
+          "default": "large",
+          "options": [
+            {
+              "value": "medium",
+              "label": "t:sections.image_with_text.blocks.text.settings.text_size.options__1.label"
+            },
+            {
+              "value": "large",
+              "label": "t:sections.image_with_text.blocks.text.settings.text_size.options__2.label"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.image_with_text.blocks.button.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:general.settings.button_label.label",
+          "default": "Button"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:general.settings.button_link.label"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:general.settings.button_style.label",
+          "default": "btn--primary",
+          "options": [
+            {
+              "value": "",
+              "label": "t:general.settings.button_style.options__1.label"
+            },
+            {
+              "value": "btn--primary",
+              "label": "t:general.settings.button_style.options__2.label"
+            },
+            {
+              "value": "btn--outline-primary",
+              "label": "t:general.settings.button_style.options__3.label"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image_with_text.presets.name",
+      "category": "t:sections.image_with_text.presets.category",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

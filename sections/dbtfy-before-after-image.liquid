@@ -1,0 +1,701 @@
+{% liquid
+  assign color_scheme = section.settings.color_scheme
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign content = section.settings.content
+  assign heading_font_size = section.settings.heading_font_size
+  assign subheading_font_size = section.settings.subheading_font_size
+  assign heading_position = section.settings.heading_position
+  assign text_alignment = section.settings.text_alignment
+  assign cursor_direction = section.settings.cursor_direction
+  assign initial_position = section.settings.initial_position
+  assign image_height = section.settings.image_height
+  assign full_width = section.settings.full_width
+  assign autoplay = section.settings.autoplay
+  assign autoplay_speed = section.settings.autoplay_speed
+  assign bullet_style = section.settings.bullet_style
+  assign selected_bullet_color = section.settings.selected_bullet_color
+  assign unselected_bullet_color = section.settings.unselected_bullet_color
+  assign bullet_position = section.settings.bullet_position
+  assign arrow_type = section.settings.arrow_type
+  assign hide_arrow_on_mobile = section.settings.hide_arrow_on_mobile
+  assign show_bullets_and_arrows_on_hover = section.settings.show_bullets_and_arrows_on_hover
+  assign arrow_background_color = section.settings.arrow_background_color
+  assign arrow_color = section.settings.arrow_color
+  assign arrow_position = section.settings.arrow_position
+  assign enable_scroll_animation = section.settings.enable_scroll_animation
+%}
+{%- capture slide_settings -%}
+  {
+    "enableAutoplay": {{ autoplay | json }},
+    "autoplaySpeed": {{ autoplay_speed | times: 1000 | json }}
+  }
+{%- endcapture -%}
+<style>
+  [data-section="{{ section.id }}"] .dbtfy-before-after__heading {
+      font-size: {{ heading_font_size }}px;
+      text-align: {{ heading_position }};
+  }
+
+  [data-section="{{ section.id }}"] .dbtfy-before-after__subheading {
+      font-size: {{ subheading_font_size }}px;
+      text-align: {{ heading_position }};
+  }
+
+  [data-section="{{ section.id }}"] .dbtfy-before-after__content {
+      text-align: {{ text_alignment }};
+  }
+
+  [data-section="{{ section.id }}"] .dbtfy-before-after {
+      height: {{ image_height }}px;
+  }
+
+  [data-section="{{ section.id }}"] .dbtfy-before-after__inner[data-layout="horizontal"] .before-after--handle-icon {
+      top: {{ bullet_position }}% !important;
+  }
+
+  [data-section="{{ section.id }}"] .dbtfy-before-after__inner[data-layout="vertical"] .before-after--handle-icon {
+      left: {{ bullet_position }}% !important;
+  }
+
+  [data-section="{{ section.id }}"] .before-after--handle,
+  [data-section="{{ section.id }}"] .before-after--handle .before-after--handle-icon {
+      color: {{ selected_bullet_color }};
+      background-color: {{ unselected_bullet_color }};
+  }
+
+  [data-section="{{ section.id }}"] .before-after__slider:active + .before-after--handle,
+  [data-section="{{ section.id }}"] .before-after__slider:active + .before-after--handle .before-after--handle-icon {
+      color: {{ unselected_bullet_color }};
+      background-color: {{ selected_bullet_color }};
+  }
+
+  [data-section="{{ section.id }}"] .slick-arrow {
+      background-color: {{ arrow_background_color }};
+      color: {{ arrow_color }};
+      top: {{ arrow_position }}%;
+  }
+</style>
+<div class="section color-{{ color_scheme }}" data-section="{{ section.id }}">
+  <div class="{% if full_width %}container-full{% else %}container{% endif %} py-5">
+    <div class="dbtfy-before-after__rte container-narrow mb-2 px-md-5">
+      {% if heading != blank %}
+        <p class="dbtfy-before-after__heading mb-3">{{ heading }}</p>
+      {% endif %}
+      {% if subheading != blank %}
+        <p class="dbtfy-before-after__subheading mb-3">{{ subheading }}</p>
+      {% endif %}
+      {% if content != blank %}
+        <div class="dbtfy-before-after__content mb-5 rte {% if text_alignment == 'center' %}px-md-5{% endif %}">
+          {{ content }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      <div
+        class="dbtfy-before-after__wrapper{% if section.blocks.size > 1 %} js-slider{% endif %}{% if hide_arrow_on_mobile %} hide-arrow-mobile{% endif %} arrow-type-{{ arrow_type }}{% if show_bullets_and_arrows_on_hover %} hover-bullets-arrow{% endif %}{% if enable_scroll_animation %} scroll-slider{% endif %}"
+        data-slide-settings="{{ slide_settings }}"
+      >
+        {% for block in section.blocks %}
+          {% liquid
+            assign color_scheme = block.settings.color_scheme
+            assign text = block.settings.text
+            assign image = block.settings.image
+            assign button_text = block.settings.button_text
+            assign button_link = block.settings.button_link
+            assign button_style = block.settings.button_style
+            assign content_position = block.settings.content_position
+
+            assign color_scheme_2 = block.settings.color_scheme_2
+            assign text_2 = block.settings.text_2
+            assign image_2 = block.settings.image_2
+            assign button_text_2 = block.settings.button_text_2
+            assign button_link_2 = block.settings.button_link_2
+            assign button_style_2 = block.settings.button_style_2
+            assign content_position_2 = block.settings.content_position_2
+          %}
+          <div data-layout="{{ cursor_direction }}" class="dbtfy-before-after__inner">
+            {% if cursor_direction == 'vertical' %}
+              {% assign initial_position = 100 | minus: initial_position %}
+            {% endif %}
+            <div
+              class="dbtfy-before-after"
+              style="--position: {{ initial_position }}%;"
+              data-index="{{ section.id }}--{{ forloop.index0 }}"
+            >
+              <div class="background-img before-after-img color-{{ color_scheme }}">
+                <div class="before-after__label-wrapper">
+                  {% if text != blank or button_text != blank %}
+                    <div class="before-after__label {{ content_position }} p-2 p-md-5">
+                      {% if text != blank %}
+                        <div class="before-after__label-text rte mb-3">{{ text }}</div>
+                      {% endif %}
+                      {% if button_text != blank %}
+                        <a
+                          class="btn {{ button_style }}"
+                          {% if button_link == blank %}
+                            disabled
+                          {% else %}
+                            href="{{ button_link }}"
+                          {% endif %}
+                        >
+                          {{- button_text -}}
+                        </a>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  <div class="before-after-box-background">
+                    <div class="pos-r h-100">
+                      {% if image == blank %}
+                        {{- 'image' | placeholder_svg_tag: 'placeholder-svg' -}}
+                      {% else %}
+                        {%- assign width_ratio = 100.0 | divided_by: 100 -%}
+                        {%- assign maximum_image_width = settings.page_container_width | divided_by: width_ratio -%}
+                        {%- capture sizes -%}(max-width: 768px) 100vw, {% if full_width %}100vw{% else %}min({{ maximum_image_width | ceil }}px, 100vw){% endif %}{% endcapture %}
+                        {{-
+                          image
+                          | image_url: width: image.width
+                          | image_tag:
+                            loading: 'lazy',
+                            sizes: sizes,
+                            widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600',
+                            class: 'media'
+                        -}}
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="foreground-img before-after-img color-{{ color_scheme_2 }}">
+                <div class="before-after__label-wrapper">
+                  {% if text_2 != blank or button_text_2 != blank %}
+                    <div class="before-after__label {{ content_position_2 }} p-2 p-md-5">
+                      {% if text_2 != blank %}
+                        <div class="before-after__label-text rte mb-3">{{ text_2 }}</div>
+                      {% endif %}
+                      {% if button_text_2 != blank %}
+                        <a
+                          class="btn {{ button_style_2 }}"
+                          {% if button_link_2 == blank %}
+                            disabled
+                          {% else %}
+                            href="{{ button_link_2 }}"
+                          {% endif %}
+                        >
+                          {{- button_text_2 -}}
+                        </a>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  <div class="before-after-box-background">
+                    <div class="pos-r h-100">
+                      {% if image_2 == blank %}
+                        {{- 'image' | placeholder_svg_tag: 'placeholder-svg' -}}
+                      {% else %}
+                        {%- assign width_ratio = 100.0 | divided_by: 100 -%}
+                        {%- assign maximum_image_width = settings.page_container_width | divided_by: width_ratio -%}
+                        {%- capture sizes -%}(max-width: 768px) 100vw, {% if full_width %}100vw{% else %}min({{ maximum_image_width | ceil }}px, 100vw){% endif %}{% endcapture %}
+                        {{-
+                          image_2
+                          | image_url: width: image_2.width
+                          | image_tag:
+                            loading: 'lazy',
+                            sizes: sizes,
+                            widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600',
+                            class: 'media'
+                        -}}
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="before-after--handle">
+                <span class="before-after--handle-icon">
+                  <span class="material-icons-outlined">{{ bullet_style }}</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "t:sections.before_after_image.name",
+  "class": "dbtfy-before-after-image",
+  "disabled_on": {
+    "groups": ["custom.widgets", "custom.general", "header"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.before_after_image.settings.color_scheme.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.before_after_image.settings.heading.label",
+      "default": "<strong>See the Transformation</strong>"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "t:sections.before_after_image.settings.heading_font_size.label",
+      "default": 28,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subheading",
+      "label": "t:sections.before_after_image.settings.subheading.label",
+      "default": "<strong>Experience the remarkable transformations our products deliver.</strong>"
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size",
+      "label": "t:sections.before_after_image.settings.subheading_font_size.label",
+      "default": 16,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:sections.before_after_image.settings.content.label",
+      "default": "<p>From dull and dry to smooth and youthful. Achieve similar (or better) results with regular use of our products.</p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_position",
+      "label": "t:sections.before_after_image.settings.heading_position.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.before_after_image.settings.heading_position.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.before_after_image.settings.heading_position.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.before_after_image.settings.heading_position.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.before_after_image.settings.text_alignment.label",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.before_after_image.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.before_after_image.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.before_after_image.settings.text_alignment.options__3.label"
+        },
+        {
+          "value": "justify",
+          "label": "t:sections.before_after_image.settings.text_alignment.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after_image.settings.header__1.content"
+    },
+    {
+      "type": "select",
+      "id": "cursor_direction",
+      "label": "t:sections.before_after_image.settings.direction.label",
+      "default": "horizontal",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "t:sections.before_after_image.settings.direction.options__1.label"
+        },
+        {
+          "value": "vertical",
+          "label": "t:sections.before_after_image.settings.direction.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "initial_position",
+      "label": "t:sections.before_after_image.settings.initial_position.label",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "t:sections.before_after_image.settings.image_height.label",
+      "default": 500,
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.before_after_image.settings.full_page_width.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after_image.settings.header__2.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.before_after_image.settings.autoplay.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:sections.before_after_image.settings.autoplay_speed.label",
+      "default": 5,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "s"
+    },
+    {
+      "type": "text",
+      "id": "bullet_style",
+      "label": "t:sections.before_after_image.settings.bullet_style.label",
+      "info": "t:sections.before_after_image.settings.bullet_style.info",
+      "default": "code"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after_image.settings.header__3.content"
+    },
+    {
+      "type": "color",
+      "id": "selected_bullet_color",
+      "label": "t:sections.before_after_image.settings.selected_bullet_color.label",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "unselected_bullet_color",
+      "label": "t:sections.before_after_image.settings.unselected_bullet_color.label",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "select",
+      "id": "bullet_position",
+      "label": "t:sections.before_after_image.settings.bullet_position.label",
+      "default": "50",
+      "options": [
+        {
+          "value": "25",
+          "label": "t:sections.before_after_image.settings.bullet_position.options__1.label"
+        },
+        {
+          "value": "50",
+          "label": "t:sections.before_after_image.settings.bullet_position.options__2.label"
+        },
+        {
+          "value": "75",
+          "label": "t:sections.before_after_image.settings.bullet_position.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after_image.settings.header__4.content"
+    },
+    {
+      "type": "select",
+      "id": "arrow_type",
+      "label": "t:sections.before_after_image.settings.arrow_type.label",
+      "default": "chevron-floating",
+      "options": [
+        {
+          "value": "chevron-floating",
+          "label": "t:sections.before_after_image.settings.arrow_type.options__1.label"
+        },
+        {
+          "value": "chevron-flat",
+          "label": "t:sections.before_after_image.settings.arrow_type.options__2.label"
+        },
+        {
+          "value": "chevron-large",
+          "label": "t:sections.before_after_image.settings.arrow_type.options__3.label"
+        },
+        {
+          "value": "arrow",
+          "label": "t:sections.before_after_image.settings.arrow_type.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_arrow_on_mobile",
+      "label": "t:sections.before_after_image.settings.hide_on_mobile.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bullets_and_arrows_on_hover",
+      "label": "t:sections.before_after_image.settings.show_bullets_and_arrows_on_hover.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after_image.settings.header__5.content"
+    },
+    {
+      "type": "color",
+      "id": "arrow_background_color",
+      "label": "t:sections.before_after_image.settings.arrow_background_color.label",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "t:sections.before_after_image.settings.arrow_color.label",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "arrow_position",
+      "label": "t:sections.before_after_image.settings.arrow_position.label",
+      "default": "50",
+      "options": [
+        {
+          "value": "25",
+          "label": "t:sections.before_after_image.settings.arrow_position.options__1.label"
+        },
+        {
+          "value": "50",
+          "label": "t:sections.before_after_image.settings.arrow_position.options__2.label"
+        },
+        {
+          "value": "75",
+          "label": "t:sections.before_after_image.settings.arrow_position.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll_animation",
+      "label": "t:sections.before_after_image.settings.enable_scroll_animation.label",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "before_after",
+      "name": "t:sections.before_after_image.blocks.before_after.name",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "header",
+          "content": "t:sections.before_after_image.blocks.before_after.settings.header__1.content"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.color_scheme.label",
+          "info": "t:sections.before_after_image.blocks.before_after.settings.color_scheme.label",
+          "default": "background-1"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.text.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.image.label",
+          "info": "t:sections.before_after_image.blocks.before_after.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_text.label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_link.label"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.label",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__1.label"
+            },
+            {
+              "value": "btn--primary",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__2.label"
+            },
+            {
+              "value": "btn--outline-primary",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__3.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.label",
+          "default": "left-top",
+          "options": [
+            {
+              "value": "left-top",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__1.label"
+            },
+            {
+              "value": "left-center",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__2.label"
+            },
+            {
+              "value": "left-bottom",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__3.label"
+            },
+            {
+              "value": "right-top",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__4.label"
+            },
+            {
+              "value": "right-center",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__5.label"
+            },
+            {
+              "value": "right-bottom",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__6.label"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "t:sections.before_after_image.blocks.before_after.settings.header__2.content"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.color_scheme.label",
+          "info": "t:sections.before_after_image.blocks.before_after.settings.color_scheme.label",
+          "default": "background-2"
+        },
+        {
+          "type": "richtext",
+          "id": "text_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.text.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.image.label",
+          "info": "t:sections.before_after_image.blocks.before_after.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "button_text_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_text.label"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_link.label"
+        },
+        {
+          "type": "select",
+          "id": "button_style_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.label",
+          "default": "",
+          "options": [
+            {
+              "value": "",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__1.label"
+            },
+            {
+              "value": "btn--primary",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__2.label"
+            },
+            {
+              "value": "btn--outline-primary",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.button_style.options__3.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "content_position_2",
+          "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.label",
+          "default": "left-top",
+          "options": [
+            {
+              "value": "left-top",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__1.label"
+            },
+            {
+              "value": "left-center",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__2.label"
+            },
+            {
+              "value": "left-bottom",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__3.label"
+            },
+            {
+              "value": "right-top",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__4.label"
+            },
+            {
+              "value": "right-center",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__5.label"
+            },
+            {
+              "value": "right-bottom",
+              "label": "t:sections.before_after_image.blocks.before_after.settings.content_position.options__6.label"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.before_after_image.name",
+      "blocks": [
+        {
+          "type": "before_after"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,190 @@
+{%- if request.design_mode -%}
+  <div class="learning-toast learning-toast--corner stacked-on-top-of-content" data-learning-toast>
+    <div class="learning-toast__card-wrapper">
+      <div class="learning-toast__card">
+        <div class="learning-toast__card-body">
+          <div class="learning-toast__content-wrapper">
+            <div class="learning-toast__icon">
+              <img src="{{ 'debutify-learning.svg' | asset_url }}" alt="Learning" width="24" height="24">
+            </div>
+
+            <div class="learning-toast__text-content">
+              <p>
+                Check out these top
+                <strong class="text-primary"
+                  >40 conversion-boosting<br>
+                  widgets</strong
+                >
+                to enhance your store's performance and increase sales.
+              </p>
+              <div class="learning-toast__actions">
+                <a
+                  href="https://debutify.com/blog/must-have-ecommerce-widgets"
+                  class="btn btn--primary btn--sm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Learn more about conversion-boosting widgets"
+                  >Learn more</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="learning-toast__close-btn" title="Close" aria-label="Close">
+            <span class="{{ settings.icon }}" translate="no">close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.initLearningToast = true;
+      theme.helpers.loadComponent('learningToast', () => {
+        theme.LearningToast.init();
+      });
+    });
+  </script>
+{%- endif -%}
+
+<style>
+  .learning-toast {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    pointer-events: none;
+  }
+
+  .learning-toast--open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .learning-toast--open::before {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .learning-toast--corner {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    z-index: 99999999;
+    width: auto;
+  }
+
+  .learning-toast__card-wrapper {
+    position: relative;
+    z-index: 999999;
+    pointer-events: auto;
+  }
+
+  .learning-toast__card {
+    background: white;
+    display: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+    -webkit-backface-visibility: hidden;
+    transition: var(--transition);
+  }
+
+  .learning-toast__card--open,
+  .learning-toast__card.is-closing {
+    display: block;
+    animation-duration: var(--transition-duration-fast);
+    animation-fill-mode: both;
+  }
+
+  .learning-toast__card--open {
+    animation-name: fadeInUp;
+  }
+
+  .learning-toast__card.is-closing {
+    animation-name: fadeOutDown;
+  }
+
+  .learning-toast__card-body {
+    padding: 24px;
+    position: relative;
+  }
+
+  .learning-toast__content-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding-right: 32px;
+  }
+
+  .learning-toast__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-light);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .learning-toast__icon img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .learning-toast__text-content {
+    flex: 1;
+  }
+
+  .learning-toast__text-content p {
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+    font-size: 15px;
+  }
+
+  .learning-toast__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .learning-toast__actions .btn--primary {
+    border-radius: 8px;
+  }
+
+  .learning-toast__close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text-light);
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 767.98px) {
+    .learning-toast--corner {
+      right: 0;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 16px;
+    }
+
+    .learning-toast__card {
+      margin: 0 auto;
+    }
+
+    .learning-toast__card-body {
+      border-radius: 5px;
+    }
+  }
+</style>

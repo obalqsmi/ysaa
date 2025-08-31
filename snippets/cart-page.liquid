@@ -1,0 +1,71 @@
+{% render "ysa-header" %}
+{% render "ysa-theme" %}
+{% render "ysa-matrix" %}
+
+<section class="cart">
+  {% if cart.item_count == 0 %}
+    <div class="cart__empty">
+      <p>Your cart is empty.</p>
+      <a href="/" class="btn">Continue Shopping</a>
+      <a href="/products/all" class="btn btn--secondary">Browse All Products</a>
+    </div>
+  {% else %}
+    <form action="/cart" method="post" novalidate class="cart__form">
+      <ul class="cart__items" role="list">
+        {% for item in cart.items %}
+          <li class="cart__item" data-line="{{ forloop.index }}">
+            <a href="{{ item.url }}" class="cart__image">
+              {{ item.image | img_url: '200x200', crop: 'center' | img_tag: item.title }}
+            </a>
+            <div class="cart__details">
+              <a href="{{ item.url }}" class="cart__title">{{ item.product.title }}</a>
+              {% unless item.product.has_only_default_variant %}
+                <p class="cart__variant">{{ item.variant.title }}</p>
+              {% endunless %}
+              <p class="cart__price">{{ item.price | money }}</p>
+              <div class="cart__qty">
+                <label class="visually-hidden" for="updates_{{ item.key }}">Quantity</label>
+                <input id="updates_{{ item.key }}" class="qty" name="updates[{{ item.key }}]" value="{{ item.quantity }}" type="number" min="0">
+              </div>
+              <p class="cart__subtotal">{{ item.line_price | money }}</p>
+              <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="cart__remove" aria-label="Remove {{ item.title }}">×</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="cart__summary">
+        <div class="cart__note">
+          <label for="CartNote">Order note</label>
+          <textarea id="CartNote" name="note" rows="3">{{ cart.note }}</textarea>
+        </div>
+        {% if settings.cart_discount_enable %}
+        <div class="cart__discount">
+          <label for="Discount">Promo code</label>
+          <input id="Discount" type="text" name="discount" form="cart" autocomplete="off">
+        </div>
+        {% endif %}
+        <p class="cart__subtotal-line">Subtotal <span id="CartSubtotal">{{ cart.total_price | money }}</span></p>
+        <p class="cart__shipping">Taxes and shipping calculated at checkout.</p>
+        <button type="submit" name="update" class="btn">Update Cart</button>
+        <button type="submit" name="checkout" class="btn btn--primary">Proceed to Checkout</button>
+      </div>
+    </form>
+  {% endif %}
+</section>
+<script>
+(function(){
+  const form = document.querySelector('.cart__form');
+  if(!form) return;
+  form.addEventListener('change', function(e){
+    if(!e.target.classList.contains('qty')) return;
+    const body = new FormData(form);
+    fetch('/cart/update.js', { method:'POST', body })
+      .then(r=>r.json())
+      .then(cart=>{
+        document.getElementById('CartSubtotal').textContent = Shopify.formatMoney(cart.total_price);
+        const countEl = document.querySelector('.ysa-cart-count');
+        if(countEl) countEl.textContent = cart.item_count;
+      });
+  });
+})();
+</script>

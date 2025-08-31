@@ -1,0 +1,52 @@
+{%- if request.design_mode -%}
+  <div class="addons-limit-reached-toast">
+    <div class="notification-toast notification-toast--popup stacked-on-top-of-content">
+      <div class="notification-toast__card-wrapper">
+        <div class="notification-toast__card card border-radius-circle" data-no-close>
+          <div class="card__header">
+            <div class="notification-toast__icon">
+              {%- render 'icon', icon: 'debutify-logo-blue' -%}
+            </div>
+
+            <h6 class="me-3">
+              Widget limit reached
+            </h6>
+
+            <button type="button"
+                    class="btn btn--square-sm ms-auto flex-shrink-0 notification-toast__close-btn"
+                    title="{{ 'general.password_page.close' | t }}"
+                    aria-label="{{ 'general.password_page.close' | t }}">
+
+              <span class="{{ settings.icon }}" translate="no" aria-hidden="true">close</span>
+            </button>
+          </div>
+
+          <div class="card__body text-sm">
+            <div class="notification-toast__banner">
+              <div class="notification-toast__banner-icon">
+                {%- render 'icon', icon: 'alarm' -%}
+              </div>
+
+              <p>You have reached the maximum number of widgets allowed by your current plan.</p>
+            </div>
+
+            <div class="addons-limit-reached-toast__message addons-limit-reached-toast__message--paid my-3">
+              <p class="addons-limit-reached-toast__text"></p>
+              <p>To add more widgets, please upgrade your plan or remove existing widgets. If you need further assistance, feel free to contact support.</p>
+            </div>
+
+            <div class="addons-limit-reached-toast__message addons-limit-reached-toast__message--free my-3">
+              <p class="addons-limit-reached-toast__text"></p>
+              <p class="my-3">Your current plan allows access to free widgets only. To use paid widgets, please consider upgrading your plan.</p>
+              <p>If you need further assistance, feel free to contact our support team.</p>
+            </div>
+
+            <p class="text-center">
+              <a href="https://theme.debutify.com/" target="_blank" class="btn btn--primary">Upgrade</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}

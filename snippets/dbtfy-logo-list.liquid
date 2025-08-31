@@ -1,0 +1,123 @@
+{%- liquid
+  assign show_logos = false
+
+  if hide_empty
+    if image == blank
+      if heading != blank or text != blank
+        assign show_logos = true
+      endif
+    else
+      assign show_logos = true
+    endif
+  else
+    assign show_logos = true
+  endif
+-%}
+
+{%- if show_logos -%}
+  <div class="dbtfy-logo-list__logo justify-content-center align-items-center mb-3" {{ block.shopify_attributes }}>
+    <style hidden>
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper svg,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper img {
+        width: 100%;
+        max-height: {{ logo_size }}px;
+        object-fit: contain;
+        margin: 0 auto;
+      }
+
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo {
+        width: {{ logo_size }}px;
+      }
+
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo a {
+        max-width: 100%;
+      }
+
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo .rte,
+      [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo h3 {
+        width: {{ logo_size }}px;
+        max-width: 100%;
+        word-break: break-word;
+        margin: 0 auto;
+      }
+
+      @media screen and (max-width: 768px) {
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo .rte,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo h3 {
+          width: {{ logo_size_mobile }}px;
+        }
+
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__logo {
+          width: {{ logo_size_mobile }}px;
+        }
+
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__icon-wrapper svg,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper,
+        [data-section-id='{{ section.id }}'] .dbtfy-logo-list__image-wrapper img {
+          max-height: {{ logo_size_mobile }}px;
+        }
+      }
+    </style>
+
+    {%- if enable_card -%}
+      <div class="card">
+        <div class="dbtfy-logo-list__body card__body align-items-center card__body--xs mb-last-0 justify-content-start">
+
+    {%- else -%}
+      <div class="dbtfy-logo-list__body mb-last-0 justify-content-start">
+    {%- endif -%}
+
+      {%- if image_link != blank -%}
+        <a href="{{ image_link }}" class="mb-last-0" aria-label="Click to open {{ image_link }} link" {% if open_link_in_new_tab %}target="_blank"{% endif %}>
+      {%- endif -%}
+
+        {%- if image != blank -%}
+          {%- assign image_width = logo_size | times: image.aspect_ratio | times: 2 | floor -%}
+          {%- capture sizes -%}{{ image_width }}px{% endcapture %}
+
+          <div class="dbtfy-logo-list__image-wrapper flex-shrink-0 media-wrapper media-wrapper--no-background">
+            {{- image | image_url: width: image.width | image_tag: loading: images_loading_type, sizes: sizes, widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: image_class -}}
+          </div>
+        {%- else -%}
+          {%- unless hide_placeholders -%}
+            <div class="dbtfy-logo-list__icon-wrapper flex-shrink-0 mx-auto d-flex justify-content-center align-items-center">
+              {{- 'image' | placeholder_svg_tag: 'placeholder-svg' -}}
+            </div>
+          {%- endunless -%}
+        {%- endif -%}
+
+      {%- if image_link != blank -%}
+        </a>
+      {%- endif -%}
+
+        {%- if heading != blank or text != blank -%}
+          <div class="dbtfy-logo-list__content-wrapper w-100 text-break-all">
+            {%- if heading != blank -%}
+              <h3 {% if settings.trust_badges_logo_heading_size %}style="font-size: {{ settings.trust_badges_logo_heading_size }}px;"{% endif %} class="h5 text-break-all{% if badge_type == 'single_block' %} text-start{% else %} pt-3{% if text_alignment != blank %} {{ text_alignment }}{% else %} text-center{% endif %}{% endif %}">{{ heading | escape }}</h3>
+            {%- endif -%}
+
+            {%- if text != blank -%}
+              <div {% if settings.trust_badges_logo_text_size %}style="font-size: {{ settings.trust_badges_logo_text_size }}px;"{% endif %} class="rte text-break-all{% if heading != blank %} pt-2{% endif %}{% if badge_type == 'single_block' %} text-start{% else %}{% if text_alignment != blank %} {{ text_alignment }}{% else %} text-center{% endif %}{% endif %}">{{ text }}</div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+      {%- if image_link != blank -%}
+        </a>
+      {%- endif -%}
+
+    {%- if enable_card -%}
+        </div>
+      </div>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

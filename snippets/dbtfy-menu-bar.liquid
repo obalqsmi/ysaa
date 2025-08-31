@@ -1,0 +1,119 @@
+{%- liquid
+  assign menu = settings.dbtfy_menu_bar_link_list
+  assign show_on_desktop = settings.dbtfy_menu_bar_show_on_desktop
+  assign show_on_mobile = settings.dbtfy_menu_bar_show_on_mobile
+  assign menu_alignment = settings.dbtfy_menu_bar_link_alignment
+  assign menu_style = settings.dbtfy_menu_bar_link_style
+  assign menu_border = settings.dbtfy_menu_bar_border
+  assign menu_featured_link_label = settings.dbtfy_menu_bar_featured_link_label | handleize 
+  assign menu_featured_link_color = settings.dbtfy_menu_bar_featured_link_color
+  assign menu_hover_style = settings.dbtfy_menu_bar_hover_style
+  assign color_scheme = settings.dbtfy_menu_bar_color_scheme
+
+  capture visibility_class
+    render 'section-visibility-class', show_on_mobile: show_on_mobile, show_on_desktop: show_on_desktop
+  endcapture
+-%}
+
+{%- if linklists[menu].links.size > 0 -%}
+  <div class="dbtfy-menu-bar">
+    <div class="dbtfy-menu-bar__container {{ visibility_class }} color-{{ color_scheme }}">
+      <ul class="dbtfy-menu-bar__inner no-bullets d-flex justify-content-{{ menu_alignment }}">
+        {%- for link in linklists[menu].links -%}
+          {%- assign link_title = link.title | handleize -%}
+
+          {%- if link.links != blank -%}
+            {%- assign parent_index = forloop.index -%}
+
+            <li class="dropdown dbtfy-menu-bar__item {{ menu_style }}{% if menu_border %} border{% endif %}">
+              <a
+                id="MenuParentToggle-{{ parent_index }}"
+                href="{{ link.url }}"
+                class="dropdown__toggle dbtfy-menu-bar__link {{ menu_hover_style }} btn btn--sm"
+                {% if menu_featured_link_label == link_title %}style="color: {{ menu_featured_link_color }} !important;"{% endif %}
+                aria-controls="MenuParent-{{ parent_index }}"
+                aria-haspopup="true"
+                aria-expanded="false"
+                {% unless request.page_type == 'index' %}
+                  {%- if link.active %}aria-current="page"{% endif -%}
+                {% endunless %}
+              >
+                <span class="dbtfy-menu-bar__link-text">
+                  {{- link.title | escape -}}
+                </span>
+
+                <span class="{{ settings.icon }}" translate="no" aria-hidden="true">keyboard_arrow_down</span>
+              </a>
+
+              <ul
+                id="MenuParent-{{ parent_index }}"
+                class="dropdown__menu"
+                aria-labelledby="MenuParentToggle-{{ parent_index }}"
+              >
+                {%- for childlink in link.links -%}
+                  {%- if childlink.links != blank -%}
+                    {%- assign child_index = forloop.index -%}
+
+                    <!-- 2 level dropdown -->
+                    <li class="dropdown dropdown__item dropdown__item--has-grandchild">
+                      <a
+                        id="MenuChildrenToggle-{{ parent_index }}-{{ child_index }}"
+                        href="{{ childlink.url }}"
+                        class="dropdown__link dropdown__toggle{% if childlink.active %} dropdown__link--active{% endif %}"
+                        aria-controls="MenuChildren-{{ parent_index }}-{{ child_index }}"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        {% unless request.page_type == 'index' %}
+                          {%- if childlink.active %}aria-current="page"{% endif -%}
+                        {% endunless %}
+                      >
+                        {{- childlink.title | escape -}}
+                      </a>
+
+                      <ul
+                        id="MenuChildren-{{ parent_index }}-{{ child_index }}"
+                        class="dropdown__menu dropdown__menu--grandchild"
+                        aria-labelledby="MenuChildrenToggle-{{ parent_index }}-{{ child_index }}"
+                      >
+                        {%- for grandchildlink in childlink.links -%}
+                          <li class="dropdown__item">
+                            <a
+                              href="{{ grandchildlink.url }}"
+                              class="dropdown__link{% if grandchildlink.active %} dropdown__link--active{% endif %}"
+                              {% unless request.page_type == 'index' %}
+                                {%- if grandchildlink.active %}aria-current="page"{% endif -%}
+                              {% endunless %}
+                            >
+                              {{ grandchildlink.title | escape }}
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </li>
+
+                  {%- else -%}
+                    <!-- 1 level dropdown -->
+                    <li class="dropdown__item">
+                      <a href="{{ childlink.url }}" class="dropdown__link{% if childlink.active %} dropdown__link--active{% endif %}" {% if childlink.active %}aria-current="page"{% endif %}>
+                        {{- childlink.title | escape -}}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </li>
+          {%- else -%}
+            <!-- only 1 link, no dropdown -->
+            <li class="dbtfy-menu-bar__item {{ menu_style }}{% if menu_border %} border{% endif %}">
+              <a href="{{ link.url }}" class="dbtfy-menu-bar__link {{ menu_hover_style }} btn btn--sm"{% if menu_featured_link_label == link_title %} style="color: {{ menu_featured_link_color }} !important;"{% endif %}>
+                <span class="dbtfy-menu-bar__link-text">
+                  {{- link.title | escape -}}
+                </span>
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+{%- endif -%}

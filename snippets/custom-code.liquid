@@ -1,0 +1,5 @@
+{%- if settings.custom_script != blank -%}
+  <script>
+    eval({{ settings.custom_script | json }});
+  </script>
+{%- endif -%}

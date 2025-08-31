@@ -1,0 +1,523 @@
+<script>
+  showAllEnabledWidgets();
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadFreeWidgets();
+  });
+
+  function showAllEnabledWidgets() {
+    const widgets = window.themeVariables.widgets;
+
+    Object.entries(widgets).forEach(([name, settings]) => {
+      if (settings.enabled) {
+        document.body.classList.add(`dbtfy-${name}-enabled`);
+      }
+    });
+  }
+
+  function loadFreeWidgets() {
+    const widgets = window.themeVariables.widgets;
+    const freeWidgets = Object.entries(widgets).filter(([_, settings]) => {
+      return settings.tier === "free" && settings.enabled;
+    });
+
+    freeWidgets.forEach(([name, settings]) => {
+      if (!settings.scriptUrl) {
+        return;
+      }
+
+      const script = createScript(settings.scriptUrl);
+
+      document.body.appendChild(script);
+    });
+  }
+
+  function createScript(url) {
+    if (!url) {
+      return null;
+    }
+
+    const script = document.createElement('script');
+
+    script.type = 'text/javascript';
+    script.src = url;
+
+    return script;
+  }
+
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  (function() {
+    init();
+
+    function init() {
+      const shopifyStoreName = window.themeVariables.variables.shop.permanentDomain;
+      const url = `https://s3.amazonaws.com/cdn.debutify.com/scripts/production/v3/${shopifyStoreName}.json?version=${getRandomInt(10000, 99999)}`;
+
+      const plan = getPlanFromCookie();
+
+      if (plan) {
+        showWidgetsBasedOnPlan(plan);
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            let plan = data?.plan;
+
+            if (plan.toLowerCase() === "trial") {
+              plan = "enterprise";
+            }
+
+            savePlanToCookie(plan);
+          })
+          .catch((error) => {
+            console.error('Error calling API:', error);
+          });
+      } else {
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            let plan = data?.plan;
+
+            if (plan.toLowerCase() === "trial") {
+              plan = "enterprise";
+            }
+
+            showWidgetsBasedOnPlan(plan);
+            savePlanToCookie(plan);
+          })
+          .catch((error) => {
+            console.error('Error calling API:', error);
+          });
+      }
+    }
+
+    function savePlanToCookie(plan, daysToExpire = 30) {
+      const date = new Date();
+
+      date.setTime(date.getTime() + (daysToExpire * 24 * 60 * 60 * 1000));
+
+      const expires = "expires=" + date.toUTCString();
+
+      document.cookie = "plan=" + plan + ";" + expires + ";path=/";
+    }
+
+    function getPlanFromCookie() {
+      const name = "plan=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const cookieArray = decodedCookie.split(';');
+
+      for (let i = 0; i < cookieArray.length; i++) {
+        let cookie = cookieArray[i];
+
+        while (cookie.charAt(0) === ' ') {
+          cookie = cookie.substring(1);
+        }
+
+        if (cookie.indexOf(name) === 0) {
+          return cookie.substring(name.length, cookie.length);
+        }
+      }
+
+      return "";
+    }
+
+    function showWidgetsBasedOnPlan(plan) {
+      const themeScript = document.querySelector('script[src*="theme.min.js"]');
+
+      if (window.themeScriptLoaded) {
+        init();
+      } else {
+        themeScript?.addEventListener("load", init);
+      }
+
+      function init() {
+        const allWidgetsCount = countWidgetsByTier(window.themeVariables.widgets, "paid");
+
+        const plans = [
+          {
+            name : "free",
+            allowedWidgetsCount: 0
+          },
+          {
+            name : "growth",
+            allowedWidgetsCount: 10
+          },
+          {
+            name : "professional",
+            allowedWidgetsCount: 40
+          },
+          {
+            name : "enterprise",
+            allowedWidgetsCount: allWidgetsCount
+          }
+        ];
+
+        if (plan) {
+          loadWidgets(plan, plans);
+        }
+
+        if (plan === "free") {
+          hideAllEnabledWidgets();
+        }
+      }
+    }
+
+    function hideAllEnabledWidgets() {
+      const widgets = window.themeVariables.widgets;
+
+      Object.entries(widgets).forEach(([name, settings]) => {
+        if (settings.enabled) {
+          document.body.classList.remove(`dbtfy-${name}-enabled`);
+        }
+      });
+    }
+
+    function countWidgetsByTier(widgets, tier) {
+      return Object.values(widgets).filter((widget) => {
+        return widget.tier === tier;
+      }).length;
+    }
+
+    function loadWidgets(planName, plans) {
+      const widgets = window.themeVariables.widgets;
+
+      const loadedWidgets = {};
+
+      for (const [key, value] of Object.entries(widgets)) {
+        loadedWidgets[key] = false;
+      }
+
+      const plan = plans.find((plan) => {
+        return plan.name === planName;
+      });
+
+      const allowedWidgetsCountPerPlan = plan.allowedWidgetsCount;
+      let allowedWidgets = [];
+      let notAllowedWidgetsCount = 0;
+      let enabledWidgetsCount = 0;
+
+      const allowedCount = plan.allowedWidgetsCount;
+      const activeWidgets = Object.entries(widgets).filter(([name, settings]) => {
+        return settings.tier === "paid" && settings.enabled;
+      });
+
+      allowedWidgets = [...allowedWidgets, ...activeWidgets.slice(0, allowedCount)];
+
+      const notAllowedWidgetsList = activeWidgets.slice(allowedCount);
+
+      if (plan.name !== "free") {
+        notAllowedWidgetsCount += notAllowedWidgetsList.length;
+      }
+
+      enabledWidgetsCount += activeWidgets.length;
+
+      notAllowedWidgetsList.forEach(([name, settings]) => {
+        document.body.classList.remove(`dbtfy-${name}-enabled`);
+      });
+
+      if (plan.name === "free" && activeWidgets.length > 0 || notAllowedWidgetsCount > 0) {
+        theme.helpers.loadComponent("notificationToast", () => {
+          theme.NotificationToast.init(".addons-limit-reached-toast");
+
+          const freeWidgetsMessage = document.querySelector(".addons-limit-reached-toast__message--free");
+          const paidWidgetsMessage = document.querySelector(".addons-limit-reached-toast__message--paid");
+          const capitalizedPlanName = plan.name.charAt(0).toUpperCase() + plan.name.slice(1);
+
+          if (plan.name === "free" && activeWidgets.length > 0) {
+            const toastText = document.querySelector(".addons-limit-reached-toast__message--free .addons-limit-reached-toast__text");
+
+            freeWidgetsMessage.style.display = "block";
+            paidWidgetsMessage.style.display = "none";
+
+            if (toastText) {
+              toastText.innerHTML = `Your current plan is <strong>${capitalizedPlanName}</strong>.`;
+            }
+          } else {
+            freeWidgetsMessage.style.display = "none";
+            paidWidgetsMessage.style.display = "block";
+
+            const toastText = document.querySelector(".addons-limit-reached-toast__message--paid .addons-limit-reached-toast__text");
+
+            if (toastText) {
+              toastText.innerHTML = `Your current plan is <strong>${capitalizedPlanName}</strong>.<br><br>You have enabled: <span>${enabledWidgetsCount}/${allowedWidgetsCountPerPlan}</span>`;
+            }
+          }
+        });
+      }
+
+      allowedWidgets.forEach(([name, settings]) => {
+        const script = createScript(settings.scriptUrl);
+
+        if (!script) {
+          return;
+        }
+
+        const productElements = document.querySelectorAll('.product-item, .product.section');
+        const collectionElements = document.querySelectorAll('.collection-item');
+        const cartElements = document.querySelectorAll('.cart-item');
+        const faqElement = document.querySelector('.dbtfy-faq');
+        const instagramFeedElement = document.querySelector('.dbtfy-instagram-feed');
+        const headerElement = document.querySelector('header');
+        const footerElement = document.querySelector('footer');
+        const searchInputs = document.querySelectorAll("input[type='search'][name='q']");
+        const wishlistPage = document.querySelector('.dbtfy-wish-list--page');
+
+        let delay = 0;
+        let increment = 0;
+
+        switch (name) {
+          case 'add-to-cart-animation':
+          case 'back-in-stock':
+          case 'collection-addtocart':
+          case 'cookie-box':
+          case 'linked-options':
+          case 'synced-variant-image':
+            document.addEventListener('theme:addon:quick-view:loaded', () => {
+              loadScript(script, name);
+            });
+            productElements.forEach(element => {
+              if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      loadScript(script, name);
+                      observer.unobserve(element);
+                    }
+                  });
+                });
+                observer.observe(element);
+              } else {
+                loadScript(script, name);
+              }
+            });
+            break;
+
+          case 'customizable-products':
+          case 'product-bullet-points':
+          case 'product-tabs':
+          case 'product-zooming':
+          case 'quantity-breaks':
+          case 'size-chart':
+          case 'sticky-addtocart':
+            if (document.body.classList.contains('template-product')) {
+              loadScript(script, name);
+            } else {
+              productElements.forEach(element => {
+                if ('IntersectionObserver' in window) {
+                  const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                      if (entry.isIntersecting) {
+                        loadScript(script, name);
+                        observer.unobserve(element);
+                      }
+                    });
+                  });
+                  observer.observe(element);
+                } else {
+                  loadScript(script, name);
+                }
+              });
+            }
+            break;
+
+          case 'agree-to-terms':
+          case 'cart-discount':
+          case 'cart-goal':
+          case 'cart-savings':
+          case 'cart-upsell':
+          case 'delivery-date':
+          case 'gift-wrap':
+          case 'minimum-order':
+          case 'order-feedback':
+            if (document.body.classList.contains('template-cart')) {
+              loadScript(script, name);
+            }
+            document.addEventListener('theme:cart:loading', () => {
+              loadScript(script, name);
+            });
+            break;
+
+          case 'back-to-top':
+          case 'breadcrumbs':
+          case 'cart-bubble':
+          case 'cart-favicon':
+          case 'cart-reminder':
+          case 'color-swatches':
+          case 'discount-saved':
+          case 'facebook-messenger':
+          case 'inactive-tab-message':
+          case 'inventory-quantity':
+          case 'menu-bar':
+          case 'newsletter-popup':
+          case 'remove-debutify-branding':
+          case 'shop-protect':
+          case 'show-second-image-on-hover':
+          case 'sticky-header':
+          case 'trust-badge':
+            setTimeout(() => {
+              loadScript(script, name);
+            }, delay);
+            delay += increment;
+            break;
+
+          case 'collection-filters':
+          case 'infinite-scroll':
+            if (document.body.classList.contains('template-collection')) {
+              loadScript(script, name);
+            }
+            break;
+
+          case 'mega-menu':
+          case 'quick-compare':
+          case 'quick-view':
+            document.addEventListener('theme:section:product-recommendations:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:quick-view:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:recently-viewed:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:wishlist:loaded', () => {
+              loadScript(script, name);
+            });
+            collectionElements.forEach(element => {
+              if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      loadScript(script, name);
+                      observer.unobserve(element);
+                    }
+                  });
+                });
+                observer.observe(element);
+              } else {
+                loadScript(script, name);
+              }
+            });
+
+            setTimeout(() => {
+              loadScript(script, name);
+            }, delay);
+            delay += increment;
+
+            break;
+
+          case 'pricing-table':
+          case 'recently-viewed':
+          case 'wishlist':
+            if (name === 'wishlist' && wishlistPage) {
+              loadScript(script, name);
+            }
+            document.addEventListener('theme:section:product-recommendations:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:quick-view:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:recently-viewed:loaded', () => {
+              loadScript(script, name);
+            });
+            document.addEventListener('theme:addon:wishlist:loaded', () => {
+              loadScript(script, name);
+            });
+            cartElements.forEach(element => {
+              if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      loadScript(script, name);
+                      observer.unobserve(element);
+                    }
+                  });
+                });
+                observer.observe(element);
+              } else {
+                loadScript(script, name);
+              }
+            });
+
+            setTimeout(() => {
+              loadScript(script, name);
+            }, delay);
+            delay += increment;
+            break;
+
+          case 'faq':
+            if (faqElement) {
+              setTimeout(() => {
+                loadScript(script, name);
+              }, delay);
+              delay += increment;
+            }
+            break;
+
+          case 'instagram-feed':
+            if (instagramFeedElement) {
+              setTimeout(() => {
+                loadScript(script, name);
+              }, delay);
+              delay += increment;
+            }
+            break;
+
+          case 'order-tracking':
+            if (headerElement) {
+              loadScript(script, name);
+            }
+            break;
+
+          case 'product-swatches':
+            if (footerElement) {
+              setTimeout(() => {
+                loadScript(script, name);
+              }, delay);
+              delay += increment;
+            }
+            break;
+
+          case 'smart-search':
+            const isSearchActive = Array.from(searchInputs).some(input => document.activeElement === input);
+            if (isSearchActive) {
+              loadScript(script, name);
+            } else {
+              searchInputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                  loadScript(script, name);
+                });
+              });
+            }
+            break;
+
+          case 'upsell-bundles':
+          case 'delivery-time':
+            if (document.body.classList.contains('template-product')) {
+              loadScript(script, name);
+            }
+            break;
+
+          default:
+            loadScript(script, name);
+        }
+      });
+
+      function loadScript(script, name) {
+        if (loadedWidgets[name]) {
+          return;
+        }
+
+        document.body.appendChild(script);
+
+        loadedWidgets[name] = true;
+      }
+    }
+  })();
+</script>

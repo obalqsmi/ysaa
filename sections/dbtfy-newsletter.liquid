@@ -1,0 +1,800 @@
+{%- liquid
+  assign show_on_desktop = section.settings.show_on_desktop
+  assign show_on_mobile = section.settings.show_on_mobile
+  assign section_style = section.settings.section_style
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign customer_tag = section.settings.customer_tag
+  assign color_scheme = section.settings.color_scheme
+
+  assign button_style = section.settings.button_style
+  assign button_shape = section.settings.button_shape
+  assign button_label = section.settings.button_label
+  assign button_icon = section.settings.button_icon
+  assign button_custom_icon = section.settings.button_custom_icon
+
+  assign layout_width = section.settings.layout_width
+  assign custom_width = section.settings.custom_width
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign padding_left = section.settings.padding_left
+  assign padding_right = section.settings.padding_right
+  assign layout_position = section.settings.layout_position
+  assign border_radius = section.settings.border_radius
+
+  assign media_use_as = section.settings.media_use_as
+  assign newsletter_image = section.settings.newsletter_image
+  assign side_media_position = section.settings.side_media_position
+  assign top_media_position = section.settings.top_media_position
+
+  assign video = section.settings.video
+  assign video_link = section.settings.video_link
+  assign enable_autoplay = section.settings.enable_autoplay
+  assign enable_mute = section.settings.enable_mute
+  assign opacity = section.settings.newsletter_video_overlay_opacity
+
+  assign section_height_mobile = section.settings.section_height_mobile
+  assign section_height = section.settings.section_height
+
+  capture visibility_class
+    render 'section-visibility-class', show_on_mobile: show_on_mobile, show_on_desktop: show_on_desktop
+  endcapture
+
+  if layout_width == 'full'
+    assign container_class = 'container-full'
+  else
+    assign container_class = 'container'
+  endif
+
+  case layout_position
+    when 'left'
+      assign content_alignment_class = 'justify-content-start text-start'
+
+    when 'center'
+      assign content_alignment_class = 'justify-content-center text-center'
+
+    when 'right'
+      assign content_alignment_class = 'justify-content-end text-end'
+
+  endcase
+
+  assign show_controls = true
+  assign autoplay = enable_autoplay
+  assign muted = enable_mute
+
+  if media_use_as == 'side' and video != blank
+    assign show_controls = false 
+    assign muted = true
+    assign autoplay = true
+  endif
+
+  if media_use_as == 'top' and video != blank
+    assign show_controls = false
+    assign muted = true
+    assign autoplay = true
+  endif
+
+  if media_use_as == 'background' and video != blank
+    assign show_controls = false
+    assign autoplay = true
+    assign muted = true
+  endif
+-%}
+
+{%- if settings.dbtfy_newsletter -%}
+  <style>
+    {% if layout_width == 'custom' %}
+      .newsletter-section[data-section-id='{{ section.id }}'] .container {
+        max-width: {{ custom_width }}px;
+      }
+    {% endif %}
+
+    .dbtfy-newsletter {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .container {
+      padding-top: {{ padding_top }}px;
+      padding-bottom: {{ padding_bottom }}px;
+      padding-left: {{ padding_left }}px;
+      padding-right: {{ padding_right }}px;
+    }
+
+    {%- if newsletter_image != blank or video != blank or video_link != blank -%}
+      {%- if media_use_as == 'side' -%}
+        .newsletter-section[data-section-id='{{ section.id }}'] .container .section-header {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      {%- else -%}
+        .newsletter-section[data-section-id='{{ section.id }}'] .container-full {
+          padding-top: {{ padding_top }}px;
+          padding-bottom: {{ padding_bottom }}px;
+        }
+
+        .newsletter-section[data-section-id='{{ section.id }}'] .section-header {
+          padding-left: {{ padding_left }}px;
+          padding-right: {{ padding_right }}px;
+        }
+      {%- endif -%}
+    {%- else -%}
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full {
+        padding-top: {{ padding_top }}px;
+        padding-bottom: {{ padding_bottom }}px;
+      }
+
+      .newsletter-section[data-section-id='{{ section.id }}'] .section-header {
+        padding-left: {{ padding_left }}px;
+        padding-right: {{ padding_right }}px;
+      }
+    {%- endif -%}
+
+    {% if media_use_as == 'background' %}
+      .newsletter-section[data-section-id='{{ section.id }}'] .newsletter-block {
+        padding-left: {{ padding_left }}px;
+        padding-right: {{ padding_right }}px;
+      }
+    {%- endif -%}
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .btn__text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .media-wrapper {
+      top: 0;
+      left: 0;
+      border-radius: {{ border_radius }}px;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] video,
+    .newsletter-section[data-section-id='{{ section.id }}'] lite-youtube,
+    .newsletter-section[data-section-id='{{ section.id }}'] lite-vimeo {
+      border-radius: {{ border_radius }}px;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .absolute {
+      position: absolute;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .row {
+      position: relative;
+      z-index: 1;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .media--video {
+      object-fit: cover;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .media--video-no-bg {
+      position:relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex: 1;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .bg-video-player {
+      position: absolute !important;
+      width: 100%;
+      top: 0;
+      left: 0;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0 !important;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] .overlay {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .newsletter-section[data-section-id='{{ section.id }}'] video-wrapper lite-youtube {
+      {% if media_use_as == 'background' %}
+        position: absolute;
+      {% endif %}
+
+      {% if media_use_as != 'background' %}
+        position: relative !important;
+      {% endif %}
+
+      width: 100%;
+      height: 100%;
+    }
+
+    @media screen and (min-width: 768px) {
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full video,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full lite-youtube,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full lite-vimeo {
+        border-radius: 0;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      .newsletter-section[data-section-id='{{ section.id }}'] .newsletter-media-wrapper {
+        flex: unset !important;
+      }
+
+      .newsletter-section[data-section-id='{{ section.id }}'] .container,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full {
+        {% if media_use_as == 'background' %}
+          min-height: var(--slideshow-height-{{ section_height_mobile }}-mobile) !important;
+        {% endif %}
+        padding-top: {{ padding_top }}px;
+        padding-bottom: {{ padding_bottom }}px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+    }
+
+    {% if media_use_as == 'background' %}
+      .newsletter-section[data-section-id='{{ section.id }}'] .container,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full {
+        min-height: var(--slideshow-height-{{ section_height }});
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full video,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full lite-youtube,
+      .newsletter-section[data-section-id='{{ section.id }}'] .container-full lite-vimeo {
+        border-radius: 0;
+      }
+    {% endif %}
+  </style>
+
+  {%- capture newsletter_block -%}
+    <div class="row newsletter-block {{ content_alignment_class }}">
+      <div class="col-md-8">
+        <div class="{% if media_use_as == 'top' or media_use_as == 'background' %}{% if layout_position == 'center' %}mx-auto{% elsif layout_position == 'right' %}ms-auto{% endif %}{% else %}{% endif %}"{% if media_use_as == 'top' or media_use_as == 'background' %} style="max-width: 700px"{% else %}{% endif %}>
+          {%- render 'newsletter-form', source: customer_tag, button_style: button_style, button_label: button_label, button_shape: button_shape, button_icon: button_icon, button_custom_icon: button_custom_icon, content_alignment_class: content_alignment_class, border_radius: border_radius -%}
+        </div>
+      </div>
+    </div>
+  {%- endcapture -%}
+
+  {%- capture image_component -%}
+    {%- if media_use_as == 'background' -%}
+      {%- capture image_sizes_attribute -%}100vw{%- endcapture -%}
+
+      <div class="media-wrapper media-wrapper--cover media-wrapper--center-center h-100 w-100 absolute{% if show_overlay %} overlay{% endif %}">
+        {{- newsletter_image | image_url: width: newsletter_image.width | image_tag: loading: 'lazy', sizes: image_sizes_attribute, widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'media' -}}
+      </div>
+    {%- else -%}
+      {%- assign width_ratio = 100.0 | divided_by: 50 -%}
+      {%- assign maximum_image_width = settings.page_container_width | divided_by: width_ratio -%}
+
+      {%- capture sizes -%}(max-width: 768px) 100vw, min({{ maximum_image_width | ceil }}px, 50vw){% endcapture %}
+
+      <div class="media-wrapper" style="padding-top: {{ 1 | divided_by: newsletter_image.aspect_ratio | times: 100 }}%;">
+        {{- newsletter_image | image_url: width: newsletter_image.width | image_tag: loading: 'lazy', sizes: sizes, widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'media' -}}
+      </div>
+    {%- endif -%}
+  {%- endcapture -%}
+
+  {%- capture video_player -%}
+    <div style="flex:1;" class="pos-r newsletter-media-wrapper{% if media_use_as == 'background' %} bg-video-player{% endif %}">
+      <video-wrapper class="video-wrapper pointer-events-none" autoplay>
+        {% if video_link != blank %}
+          {% if video_link.type == 'youtube' %}
+            <lite-youtube
+              videoid="{{ video_link.id }}"
+              class="absolute top-1/2 left-1/2 w-full h-full -translate-x-1/2 -translate-y-1/2"
+              params="autoplay={%- if autoplay -%}1{%- else -%}0{%- endif -%}&mute={%- if muted -%}1{%- else -%}0{%- endif -%}&controls=1&loop=1&rel=0"
+
+              data-style="background-image: url('https://i.ytimg.com/vi_webp/{{ video_link.id }}/hqdefault.webp');">
+            </lite-youtube>
+          {% elsif video_link.type == 'vimeo' %}
+            <lite-vimeo
+              videoid="{{ video_link.id }}"
+              class="absolute top-0 left-0 w-full h-full object-cover"
+              data-muted>
+            </lite-vimeo>
+          {% endif %}
+        {% elsif video != blank %}
+          {{- video | video_tag: playsinline: true, muted: muted, loop: true, autoplay: autoplay, controls: show_controls, preload: 'metadata', class: 'media media--video media--video-no-bg' -}}
+        {% endif %}
+      </video-wrapper>
+    </div>
+  {%- endcapture -%}
+
+  {%- capture newsletter_with_media_block -%}
+    <div class="row gap-lg gap-md-0{% if newsletter_image != blank or video != blank or video_link != blank %}{% if media_use_as == 'side' or media_use_as == 'top' %}{% else %} align-items-center{% endif %}{% else %} align-items-center{% endif %} gx-0 gy-3 gy-md-0{% if media_use_as == 'side' and side_media_position == 'right' %} flex-row-reverse{% endif %}{% if media_use_as == 'top' %} flex-column{% endif %}{% if media_use_as == 'top' and top_media_position == 'bottom' %} flex-column-reverse{% endif %}">
+      {%- if video_link != blank or video != blank -%}
+        {{- video_player -}}
+      {%- elsif newsletter_image != blank -%}
+        <div class="{% if media_use_as == 'side'%}col-md-6{% else %}col-md-12{% endif %} d-flex align-items-center">
+          {{- image_component -}}
+        </div>
+      {%- endif -%}
+
+      <div class="{% if newsletter_image != blank or video != blank or video_link != blank %}{% if media_use_as == 'side' or media_use_as == 'top' %}{% else %} pb-sm-3{% endif %}{% else %} pb-sm-3{% endif %}{% if media_use_as == 'side' %} col-md-6{% else %} col-md-12{% endif %} d-flex flex-column justify-content-center {{ text_alignment }}" data-section-type="video" data-section-id="{{ section.id }}">
+        <div class="row gx-0 gy-3 p-md-4 p-lg-5{% if container_size == 'container-full' %} px-3 pb-3{% endif %}">
+          {%- if newsletter_image != blank or video != blank or video_link != blank -%}
+            {%- if media_use_as == 'side' -%}
+              {%- render 'section-header', heading: heading, subheading: subheading, no_offset: true, content_alignment_class: content_alignment_class -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          {% if media_use_as == 'top' or media_use_as == 'background' %}
+            <div class="{% if layout_position == 'center' %}mx-auto{% elsif layout_position == 'right' %}ms-auto{% endif %}" style="max-width: 700px">
+          {% endif %}
+
+            {%- render 'newsletter-form', source: customer_tag, button_style: button_style, button_label: button_label, button_shape: button_shape, button_icon: button_icon, button_custom_icon: button_custom_icon, content_alignment_class: content_alignment_class, border_radius: border_radius -%}
+
+          {% if media_use_as == 'top' or media_use_as == 'background' %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {%- endcapture -%}
+
+  {%- capture newsletter_with_media_background_block -%}
+    {%- if video_link != blank or video != blank -%}
+      {{- video_player -}}
+    {%- elsif newsletter_image != blank -%}
+      {{- image_component -}}
+    {%- endif -%}
+
+     {%- unless opacity == 0 -%}
+      <div class="overlay z-20 top-0 left-0 w-full h-full absolute bg-black" style="opacity: {{ opacity }}%"></div>
+    {%- endunless -%}
+  {%- endcapture -%}
+
+  <div class="dbtfy-newsletter newsletter-section section {{ visibility_class }} color-{{ color_scheme }} color-text{% if layout_width == 'full' %} section--no-spacing{% endif %}"
+       data-section-type="newsletter"
+       data-section-id="{{ section.id }}">
+
+    <div class="{{ container_class }}">
+      {%- if newsletter_image != blank or video != blank or video_link != blank -%}
+        {%- if media_use_as == 'side' -%}
+
+        {%- else -%}
+          {%- render 'section-header', heading: heading, subheading: subheading, no_offset: true, content_alignment_class: content_alignment_class -%}
+        {%- endif -%}
+      {%- else -%}
+        {%- render 'section-header', heading: heading, subheading: subheading, no_offset: true, content_alignment_class: content_alignment_class -%}
+      {%- endif -%}
+
+      {%- if newsletter_image != blank or video != blank or video_link != blank -%}
+        {%- case media_use_as -%}
+          {%- when 'top' -%}
+            {{- newsletter_with_media_block -}}
+
+          {%- when 'side' -%}
+            {{- newsletter_with_media_block -}}
+
+          {%- when 'background' -%}
+            {{- newsletter_block -}}
+            {{- newsletter_with_media_background_block -}}
+
+        {%- endcase -%}
+      {%- else -%}
+        {{- newsletter_block -}}
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if video_link != blank and autoplay -%}
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        function clickPlayButton() {
+          const playButton = document.querySelector(".newsletter-section[data-section-id='{{ section.id }}'] lite-youtube button.lty-playbtn");
+
+          if (playButton) {
+            playButton.click();
+          } else {
+            setTimeout(clickPlayButton, 100);
+          }
+        }
+
+        clickPlayButton();
+      });
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.newsletter.name",
+  "disabled_on": {
+    "groups": [
+      "custom.addons",
+      "custom.general",
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.addons.help_center.header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "[Follow our step-by-step tutorial](https://help.debutify.com/en/articles/9743562-how-to-use-the-newsletter-widget-or-debutify-theme-version-7)"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.enable_disable.content"
+    },
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:general.settings.heading.label",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:general.settings.subheading.label",
+      "default": "A short sentence describing what someone will receive by subscribing"
+    },
+    {
+      "type": "select",
+      "id": "button_shape",
+      "label": "Button shape",
+      "default": "rounded",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:general.settings.button_style.label",
+      "default": "btn--primary",
+      "options": [
+        {
+          "value": "",
+          "label": "t:general.settings.button_style.options__1.label"
+        },
+        {
+          "value": "btn--primary",
+          "label": "t:general.settings.button_style.options__2.label"
+        },
+        {
+          "value": "btn--outline-primary",
+          "label": "t:general.settings.button_style.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:general.settings.button_label.label",
+      "default": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_icon",
+      "label": "Icon for button",
+      "info": "t:general.settings.icon.info",
+      "default": "local_shipping"
+    },
+    {
+      "type": "image_picker",
+      "id": "button_custom_icon",
+      "label": "Custom icon"
+    },
+    {
+      "type": "header",
+      "content": "Layout settings"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:sections.slideshow.settings.section_height.label",
+      "default": "lg",
+      "options": [
+        {
+          "value": "xs",
+          "label": "t:sections.slideshow.settings.section_height.options__1.label"
+        },
+        {
+          "value": "sm",
+          "label": "t:sections.slideshow.settings.section_height.options__2.label"
+        },
+        {
+          "value": "md",
+          "label": "t:sections.slideshow.settings.section_height.options__3.label"
+        },
+        {
+          "value": "lg",
+          "label": "t:sections.slideshow.settings.section_height.options__4.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.slideshow.settings.section_height.options__5.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "section_height_mobile",
+      "label": "t:sections.slideshow.settings.section_height_mobile.label",
+      "default": "lg",
+      "options": [
+        {
+          "value": "xs",
+          "label": "t:sections.slideshow.settings.section_height_mobile.options__1.label"
+        },
+        {
+          "value": "sm",
+          "label": "t:sections.slideshow.settings.section_height_mobile.options__2.label"
+        },
+        {
+          "value": "md",
+          "label": "t:sections.slideshow.settings.section_height_mobile.options__3.label"
+        },
+        {
+          "value": "lg",
+          "label": "t:sections.slideshow.settings.section_height_mobile.options__4.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:sections.slideshow.settings.section_height_mobile.options__5.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout_width",
+      "label": "Layout width",
+      "default": "full",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom width",
+      "min": 800,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 1000
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Padding left",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Padding right",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "layout_position",
+      "label": "Layout position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Media settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "newsletter_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "media_use_as",
+      "label": "Media use as",
+      "default": "background",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "side",
+          "label": "Side"
+        },
+        {
+          "value": "background",
+          "label": "Background"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "side_media_position",
+      "label": "Side media position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.image_with_text.settings.image_position.options__1.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.image_with_text.settings.image_position.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "top_media_position",
+      "label": "Top media position",
+      "default": "top",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "Video is autoplayed and muted."
+    },
+    {
+      "type": "video_url",
+      "id": "video_link",
+      "label": "t:sections.video.blocks.video.settings.video_link.label",
+      "info": "t:sections.video.blocks.video.settings.video_link.info",
+      "accept": [
+        "youtube",
+        "vimeo"
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Autoplay",
+      "default": false,
+      "info": "Applies for Youtube or Vimeo videos. Video must be muted to enable autoplay."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mute",
+      "label": "Mute",
+      "default": false,
+      "info": "Applies for Youtube or Vimeo videos."
+    },
+    {
+      "type": "range",
+      "id": "newsletter_video_overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "unit": "%",
+      "step": 5,
+      "default": 60,
+      "info": "If overlay opacity is greater than 0, Youtube or Vimeo videos will not be controlled."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "t:general.settings.show_on_desktop.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "t:general.settings.show_on_mobile.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "customer_tag",
+      "label": "t:sections.newsletter.settings.customer_tag.label",
+      "default": "newsletter",
+      "info": "t:sections.newsletter.settings.customer_tag.info"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.newsletter.settings.paragraph__1.content"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.newsletter.presets.name",
+      "category": "t:sections.newsletter.presets.category"
+    }
+  ]
+}
+{% endschema %}

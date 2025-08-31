@@ -1,0 +1,486 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="dbtfy-delivery-time" hidden>
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign text_message_style = block.settings.text_message_style
+        assign icon_display = block.settings.icon_display
+        assign icon = block.settings.icon
+        assign timeline_icon = block.settings.timeline_icon
+        assign text = block.settings.text
+        assign date_format = block.settings.text_date_format_timer
+        assign time_unit = block.settings.time_unit
+        assign visual_date_format = block.settings.visual_date_format
+        assign min_days = block.settings.min_days
+        assign max_days = block.settings.max_days
+        assign dispatched_days = block.settings.dispatched_days
+        assign exclude_days = block.settings.exclude_days
+        assign show_delivery_cutoff_time = block.settings.show_delivery_cutoff_time
+        assign cutoff_time = block.settings.cutoff_time
+        assign cutoff_message = block.settings.cutoff_message
+        assign cutoff_reached = block.settings.cutoff_reached
+        assign visibility = block.settings.visibility
+        assign collection = block.settings.collection
+        assign types = block.settings.types
+        assign tags = block.settings.tags
+        assign product = block.settings.product
+        assign region = block.settings.region
+        assign day_value = block.settings.delivery_day
+        assign label_text = block.settings.order_delivered_label
+        assign updated_label = label_text | replace: '{day}', day_value
+
+      -%}
+
+      {%- capture block_settings -%}
+        {
+          "text": {{ text | json }},
+          "region": {{ region | json }},
+          "dateFormat": {{ date_format | json }},
+          "timeUnit": {{ time_unit| json }},
+          "visualDateFormat": {{ visual_date_format | json}},
+          "minDays": {{ min_days | json }},
+          "maxDays": {{ max_days | json }},
+          "dispatchedDays": {{ dispatched_days | json }},
+          "excludeDays": {{ exclude_days | json }},
+          "showDeliveryCutoffTime": {{ show_delivery_cutoff_time | json }},
+          "cutoffTime": {{ cutoff_time | json }},
+          "cutoffMessage": {{ cutoff_message | json }},
+          "cutoffReached": {{ cutoff_reached | json }},
+          "visibility": {{ visibility | json }},
+          "collection": {{ collection | json }},
+          "types": {{ types | json }},
+          "tags": {{ tags | json }},
+          "productId": {{ product.id | json }}
+        }
+      {%- endcapture -%}
+
+      <div class="dbtfy-delivery-time__item card bg--{{ text_message_style}}" data-block-settings='{{ block_settings }}' {{ block.shopify_attributes }}>
+        <div class="dbtfy-delivery-time__item-content">
+          {%- if icon_display -%}
+            <span class="{{ settings.icon }} icon" translate="no">{{ icon }}</span>
+          {% endif %}
+          <span class="dbtfy-delivery-time__item-text"></span>
+          {%- if show_delivery_cutoff_time -%}
+            &nbsp;<span class="dbtfy-delivery-time__item-cut-off"></span>
+          {%- endif -%}
+        </div>
+
+        {% if block.settings.timeline %}
+          <div class="dbtfy-delivery-time__timeline">
+            <ul class="timeline mt-2 {{ timeline_icon }} icon--{{ text_message_style }}">
+              <li class="order_placed" style="--order-placed: '{{ block.settings.order_placed_icon }}';"><p><span>{{ block.settings.order_placed_label }}</span>{{ block.settings.order_placed_text }}</p></li>
+              <li class="order_dispatched" style="--order-dispatched: '{{ block.settings.order_dispatched_icon }}';"><p><span class="dbtfy-delivery-time__dispatched"></span>{{ block.settings.order_dispatched_text }}</p></li>
+              <li class="order_delivered" style="--order-delivered: '{{ block.settings.order_delivered_icon }}';"><p><span class="dbtfy-delivery-time__delivered">{{ updated_label }}</span>{{ block.settings.order_delivered_text }}</p></li>
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+{% schema %}
+{
+  "name": "t:sections.addons.delivery_time.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.addons.help_center.header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.delivery_time.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.enable_disable.content"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "delivery_time",
+      "name": "t:sections.addons.delivery_time.blocks.delivery_time.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:general.sections.blocks.block_name.label",
+          "info": "t:general.sections.blocks.block_name.info"
+        },
+        {
+          "type": "header",
+          "content": "Delivery zones"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.cart_goal.blocks.goal.settings.header__1.content",
+          "info": "t:sections.addons.cart_goal.blocks.goal.settings.header__1.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.cart_goal.blocks.goal.settings.header__2.content",
+          "info": "t:sections.addons.cart_goal.blocks.goal.settings.header__2.info"
+        },
+        {
+          "type": "text",
+          "id": "region",
+          "label": "t:sections.addons.cart_goal.blocks.goal.settings.goal_region.label",
+          "info": "t:sections.addons.cart_goal.blocks.goal.settings.goal_region.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__1.content"
+        },
+        {
+          "type": "select",
+          "id": "text_date_format_timer",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.label",
+          "default": "1",
+          "options":[
+            {
+              "value": "1",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__1.label"
+            },
+            {
+              "value": "2",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__2.label"
+            },
+            {
+              "value": "3",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__3.label"
+            },
+            {
+              "value": "4",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__4.label"
+            },
+            {
+              "value": "5",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__5.label"
+            },
+            {
+              "value": "6",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text_date_format_timer.options__6.label"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "visual_date_format",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.visual_date_format.label",
+          "default": "MM",
+          "options":[
+            {
+              "value": "MM",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.visual_date_format.options__1.label"
+            },
+            {
+              "value": "DD",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.visual_date_format.options__2.label"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "id": "exclude_days",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.exclude_days.label",
+          "default": "SAT, SUN",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.exclude_days.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__2.content"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:general.settings.text.label",
+          "default": "<p> Estimated delivery between <strong>{min} and {max}.</strong></p>",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.text.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "icon_display",
+          "label": "Add icon before message",
+          "default": true,
+          "info": "This will add icon before text."
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "t:general.settings.icon.label",
+          "default": "local_shipping",
+          "info": "t:general.settings.icon.info"
+        },
+        {
+          "type": "select",
+          "id": "text_message_style",
+          "label": "Text message style",
+          "default": "blank",
+          "options": [
+            {
+              "value": "blank",
+              "label": "Only text"
+            },
+            {
+              "value": "default",
+              "label": "Text with background"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__3.content",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__3.info"
+        },
+        {
+          "type": "range",
+          "id": "min_days",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.min_days.label",
+          "min": 1,
+          "max": 60,
+          "step": 1,
+          "default": 7,
+          "unit": "day"
+        },
+        {
+          "type": "range",
+          "id": "max_days",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.max_days.label",
+          "min": 1,
+          "max": 60,
+          "step": 1,
+          "default": 14,
+          "unit": "day"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__4.content"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_delivery_cutoff_time",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.show_delivery_cutoff_time.label",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "time_unit",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.time_unit.label",
+          "default": "1",
+          "options":[
+            {
+              "value": "1",
+              "label": "xx hours, xx minutes, xx seconds"
+            },
+            {
+              "value": "2",
+              "label": "x hours, x minutes, x seconds"
+            },
+            {
+              "value": "3",
+              "label": "xx H, xx M, xx S"
+            },
+            {
+              "value": "4",
+              "label": "x H, x M, x S"
+            },
+            {
+              "value": "5",
+              "label": "hh:mm:ss"
+            },
+            {
+              "value": "6",
+              "label": "h:m:s"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "cutoff_time",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_time.label",
+          "default": "16:00:00",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_time.info"
+        },
+        {
+          "type": "richtext",
+          "id": "cutoff_message",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_message.label",
+          "default": "<p>Order within <strong>{time}</strong></p>",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_message.info"
+        },
+        {
+          "type": "text",
+          "id": "cutoff_reached",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_reached.label",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.cutoff_reached.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.delivery_time.blocks.delivery_time.settings.header__5.content"
+        },
+        {
+          "type": "checkbox",
+          "id": "timeline",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.timeline.label",
+          "info": "t:sections.addons.delivery_time.blocks.delivery_time.settings.timeline.info",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "timeline_icon",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.timeline_icon.label",
+          "default": "square",
+          "options":[
+            {
+              "value": "square",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.timeline_icon.options__1.label"
+              },
+            {
+              "value": "circle",
+              "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.timeline_icon.options__2.label"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Order placed"
+        },
+        {
+          "type": "text",
+          "id": "order_placed_label",
+          "label": "Order placed label",
+          "default": "Today"
+        },
+        {
+          "type": "text",
+          "id": "order_placed_text",
+          "label": "Order placed text",
+          "default": "Order placed"
+        },
+        {
+          "type": "text",
+          "id": "order_placed_icon",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.order_placed_icon.label",
+          "default": "check",
+          "info": "t:general.settings.icon.info"
+        },
+        {
+          "type": "header",
+          "content": "Order dispatched"
+        },
+        {
+          "type": "text",
+          "id": "order_dispatched_text",
+          "label": "Order dispatched text",
+          "default": "Order dispatches"
+        },
+        {
+          "type": "text",
+          "id": "order_dispatched_icon",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.order_dispatched_icon.label",
+          "default": "check",
+          "info": "t:general.settings.icon.info"
+        },
+        {
+          "type": "header",
+          "content": "Order delivered"
+        },
+        {
+          "type": "text",
+          "id": "order_delivered_label",
+          "label": "Order delivered label",
+          "default": "{day} days",
+          "info": "{day} - delivered days."
+        },
+        {
+          "type": "text",
+          "id": "order_delivered_text",
+          "label": "Order delivered text",
+          "default": "Delivered"
+        },
+        {
+          "type": "text",
+          "id": "order_delivered_icon",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.order_delivered_icon.label",
+          "default": "check",
+          "info": "t:general.settings.icon.info"
+        },
+        {
+          "type": "range",
+          "id": "dispatched_days",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.dispatched_days.label",
+          "min": 1,
+          "max": 60,
+          "step": 1,
+          "default": 2,
+          "unit": "day"
+        },
+        {
+          "type": "range",
+          "id": "delivery_day",
+          "label": "t:sections.addons.delivery_time.blocks.delivery_time.settings.delivery_day.label",
+          "min": 1,
+          "max": 60,
+          "step": 1,
+          "default": 7,
+          "unit": "day"
+        },
+        {
+          "type": "header",
+          "content": "t:general.settings.visibility.header.content",
+          "info": "t:general.settings.visibility.header.info"
+        },
+        {
+          "type": "radio",
+          "id": "visibility",
+          "label": "t:general.settings.visibility.visibility.label",
+          "info": "t:general.settings.visibility.visibility.info",
+          "default": "all",
+          "options": [
+            {
+              "value": "all",
+              "label": "t:general.settings.visibility.visibility.options__1.label"
+            },
+            {
+              "value": "collection",
+              "label": "t:general.settings.visibility.visibility.options__2.label"
+            },
+            {
+              "value": "type",
+              "label": "t:general.settings.visibility.visibility.options__3.label"
+            },
+            {
+              "value": "tag",
+              "label": "t:general.settings.visibility.visibility.options__4.label"
+            },
+            {
+              "value": "product",
+              "label": "t:general.settings.visibility.visibility.options__5.label"
+            }
+          ]
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:general.settings.visibility.collection.label"
+        },
+        {
+          "type": "text",
+          "id": "types",
+          "label": "t:general.settings.visibility.types.label",
+          "info": "t:general.settings.visibility.types.info"
+        },
+        {
+          "type": "text",
+          "id": "tags",
+          "label": "t:general.settings.visibility.tags.label",
+          "info": "t:general.settings.visibility.tags.info"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:general.settings.visibility.product.label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

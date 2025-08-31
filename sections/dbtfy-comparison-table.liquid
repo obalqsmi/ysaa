@@ -1,0 +1,539 @@
+{%- liquid
+  assign show_on_desktop = section.settings.enable_on_desktop
+  assign show_on_mobile = section.settings.enable_on_mobile
+
+  assign heading = section.settings.heading
+  assign heading_font_size = section.settings.heading_size
+  assign subheading =  section.settings.subheading
+  assign button_text = section.settings.button_text
+  assign button_link = section.settings.button_link
+  assign button_style = section.settings.button_style 
+
+  assign table_placement = section.settings.desktop_table_placement
+  assign table_style = section.settings.table_style
+
+  assign shop_logo = section.settings.shop_logo
+  assign shop_label = section.settings.shop_label
+  assign shop_label_font_size = section.settings.shop_label_font_size
+
+  assign competitor_logo = section.settings.competitor_logo
+  assign competitor_label = section.settings.competitor_label
+  assign competitor_font_size = section.settings.competitor_font_size
+
+  assign section_top_padding = section.settings.section_top_padding
+  assign section_bottom_padding = section.settings.section_bottom_padding
+
+  assign color_scheme = section.settings.color_scheme
+
+  capture visibility_class
+      render 'section-visibility-class', show_on_mobile: show_on_mobile, show_on_desktop: show_on_desktop
+  endcapture
+-%}
+<style>
+  .section[data-section-id='{{ section.id }}'] {
+      padding-top: {{ section_top_padding }}px;
+      padding-bottom: {{ section_bottom_padding }}px;
+  }
+  img.dbtfy-comparison-table__icon {
+      width: 24px;
+      margin: auto;
+  }
+  .section[data-section-id='{{ section.id }}'] .dbtfy-comparison-table__heading {
+      font-size: {{ heading_font_size }}px;
+  }
+
+  .section[data-section-id='{{ section.id }}'] .dbtfy-comparison-table__table .dbtfy-comparison-table__td.shopLableFont {
+      font-size: {{ shop_label_font_size }}px;
+  }
+
+  .section[data-section-id='{{ section.id }}'] .dbtfy-comparison-table__table .dbtfy-comparison-table__td.competitorLabelFont {
+      font-size: {{ competitor_font_size }}px;
+  }
+  
+  .dbtfy-comparison-table__th-subheading ul{
+      list-style: disc;
+  }
+  {% for block in section.blocks %}
+      {% assign heading_font_size = block.settings.heading_font_size %}
+
+      #dbtfy-comparison-table__row--{{ block.id }} .dbtfy-comparison-table__th-heading {
+          font-size: {{ heading_font_size }}px;
+      }
+  {% endfor %}
+</style>
+<div class="section {{ visibility_class }} color-{{ color_scheme }}" data-section-id="{{ section.id }}">
+  <div class="container">
+      <div class="row align-items-center {% if table_placement == 'left' %}flex-row-reverse{% endif %}">
+          <div class="col-lg-5">
+              <div class="rte text-center px-4 px-lg-5">
+                  {% if heading != blank %}
+                      <h2 class="dbtfy-comparison-table__heading">{{ heading }}</h2>
+                  {% endif %}
+                  {% if subheading != blank %}
+                      <div class="dbtfy-comparison-table__subheading">{{ subheading }}</div>
+                  {% endif %}
+                  {% if button_text != blank %}
+                      <div class="text-center mt-4 py-2">
+                          <a class="btn {{ button_style }}" href="{{ button_link }}"{% if button_link == blank %}disabled{% endif %}>{{ button_text }}</a>
+                      </div>
+                  {% endif %}
+              </div>
+          </div>
+          <div class="col-lg-7 mt-5 mt-lg-0">
+              <div class="row align-items-center justify-content-center">
+                  <div class="dbtfy-comparison-table__inner">
+                      {% if section.blocks.size > 0 %}
+                          <table class="dbtfy-comparison-table__table dbtfy-comparison-table__{{ table_style }}">
+                              <tr class="dbtfy-comparison-table__row">
+                                  {% unless table_style == 'minimalistic' %}
+                                      <th class="dbtfy-comparison-table__th">
+                                      </th>
+                                  {% endunless %}
+                                  <td class="dbtfy-comparison-table__td shopLableFont">
+                                      {% liquid
+                                          if shop_logo != blank
+                                              echo shop_logo | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__logo'
+                                          else
+                                              echo shop_label
+                                          endif
+                                      %}
+                                  </td>
+                                  {% if table_style == 'minimalistic' %}
+                                      <th class="dbtfy-comparison-table__th">
+                                      </th>
+                                  {% endif %}
+                                  <td class="dbtfy-comparison-table__td competitorLabelFont">
+                                      {% liquid
+                                          if competitor_logo != blank
+                                              echo competitor_logo | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__logo'
+                                          else
+                                              echo competitor_label
+                                          endif
+                                      %}
+                                  </td>
+                              </tr>
+                              {% for block in section.blocks %}
+                                  {% liquid
+                                      assign row_label = block.settings.label
+      
+                                      assign enable_store = block.settings.enable_store
+                                      assign competitor = block.settings.competitor
+      
+                                      assign row_subheading = block.settings.subheading
+
+                                      assign column_value_display_type = block.settings.column_value_display_type
+
+                                      assign column_value_icon_1 = block.settings.column_value_icon_1
+                                      assign column_value_label_1 = block.settings.column_value_label_1
+                                      
+                                      assign column_value_icon_2 = block.settings.column_value_icon_2
+                                      assign column_value_label_2 = block.settings.column_value_label_2
+                                  %}
+                                  <tr class="dbtfy-comparison-table__row" id="dbtfy-comparison-table__row--{{ block.id }}">
+                                      {% unless table_style == 'minimalistic' %}
+                                          <th class="dbtfy-comparison-table__th">
+                                              <span class="dbtfy-comparison-table__th-heading">{{ row_label }}</span>
+                                              {% if row_subheading != blank %}
+                                                  <div class="dbtfy-comparison-table__th-subheading">{{ row_subheading }}</div>
+                                              {% endif %}
+                                          </th>
+                                      {% endunless %}
+                                      <td class="dbtfy-comparison-table__td" data-check="{{ enable_store }}">
+                                          {% capture default_check_icon %}<span class="{{ settings.icon }}" translate="no">done</span>{% endcapture %}
+                                          {% capture default_close_icon %}<span class="{{ settings.icon }}" translate="no">close</span>{% endcapture %}
+                                          {% liquid
+                                              if column_value_display_type == 'icon'
+                                                  if enable_store
+                                                      if column_value_icon_1 != blank
+                                                          echo column_value_icon_1 | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__icon'
+                                                      else
+                                                          echo default_check_icon
+                                                      endif
+                                                  else
+                                                      if column_value_icon_2 != blank
+                                                          echo column_value_icon_2 | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__icon'
+                                                      else
+                                                          echo default_close_icon
+                                                      endif
+                                                  endif
+                                              else
+                                                  if enable_store
+                                                      echo column_value_label_1
+                                                  else
+                                                      echo column_value_label_2
+                                                  endif
+                                              endif
+                                          %}
+                                      </td>
+                                      {% if table_style == 'minimalistic' %}
+                                          <th class="dbtfy-comparison-table__th">
+                                              <span class="dbtfy-comparison-table__th-heading">{{ row_label }}</span>
+                                              {% if row_subheading != blank %}
+                                                  <div class="dbtfy-comparison-table__th-subheading">{{ row_subheading }}</div>
+                                              {% endif %}
+                                          </th>
+                                      {% endif %}
+                                      <td class="dbtfy-comparison-table__td" data-check="{{ competitor }}">
+                                          {% capture default_check_icon %}<span class="{{ settings.icon }}" translate="no">done</span>{% endcapture %}
+                                          {% capture default_close_icon %}<span class="{{ settings.icon }}" translate="no">close</span>{% endcapture %}
+                                          {% liquid
+                                              if column_value_display_type == 'icon'
+                                                  if competitor
+                                                      if column_value_icon_1 != blank
+                                                          echo column_value_icon_1 | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__icon'
+                                                      else
+                                                          echo default_check_icon
+                                                      endif
+                                                  else
+                                                      if column_value_icon_2 != blank
+                                                          echo column_value_icon_2 | image_url: width: 100 | image_tag: loading: 'eager', sizes: '100vw', widths: '300,400,500,600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', class: 'dbtfy-comparison-table__icon'
+                                                      else
+                                                          echo default_close_icon
+                                                      endif
+                                                  endif
+                                              else
+                                                  if competitor
+                                                      echo column_value_label_1
+                                                  else
+                                                      echo column_value_label_2
+                                                  endif
+                                              endif
+                                          %}
+                                      </td>
+                                  </tr>
+                              {% endfor %}
+                          </table>
+                      {% endif %}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.addons.comparison_table.name",
+  "class": "dbtfy-comparison-table",
+  "disabled_on": {
+      "groups": [
+      "custom.widgets",
+      "custom.general",
+      "header"
+      ]
+  },
+  "settings": [
+      {
+          "type": "header",
+          "content": "t:general.addons.help_center.header.content"
+      },
+      {
+          "type": "paragraph",
+          "content": "t:general.addons.help_center.comparison_table.content"
+      },
+      {
+          "type": "paragraph",
+          "content": "t:general.addons.help_center.enable_disable2.content"
+      },
+      {
+          "type": "checkbox",
+          "id": "enable_on_desktop",
+          "label": "t:sections.addons.comparison_table.settings.enable_on_desktop.label",
+          "default": true
+      },
+      {
+          "type": "checkbox",
+          "id": "enable_on_mobile",
+          "label": "t:sections.addons.comparison_table.settings.enable_on_mobile.label",
+          "default": true
+      },
+      {
+          "type": "header",
+          "content": "t:sections.addons.comparison_table.settings.general_header.content"
+      },
+      {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.addons.comparison_table.settings.heading_text.label",
+          "info": "t:sections.addons.comparison_table.settings.heading_text.info",
+          "default": "Comparison table"
+      },
+      {
+          "type": "range",
+          "id": "heading_size",
+          "label": "t:sections.addons.comparison_table.settings.heading_font_size.label",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 40,
+          "unit": "px"
+      },
+      {
+          "type": "richtext",
+          "id": "subheading",
+          "label": "t:sections.addons.comparison_table.settings.subheading.label",
+          "default": "<p>Talk about how and why is your brand better than the others.</p>"
+      },
+      {
+          "type": "text",
+          "id": "button_text",
+          "label": "t:sections.addons.comparison_table.settings.button_label.label",
+          "default": "Button text",
+          "info": "t:sections.addons.comparison_table.settings.button_label.info"
+      },
+      {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:sections.addons.comparison_table.settings.button_style.label",
+          "options": [
+              {
+                  "value": "",
+                  "label": "t:sections.addons.comparison_table.settings.button_style.options__1.label"
+              },
+              {
+                  "value": "btn--primary",
+                  "label": "t:sections.addons.comparison_table.settings.button_style.options__2.label"
+              },
+              {
+                  "value": "btn--outline-primary",
+                  "label": "t:sections.addons.comparison_table.settings.button_style.options__3.label"
+              }
+          ],
+          "default": "btn--primary"
+      },
+      {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.addons.comparison_table.settings.button_link.label"
+      },
+      {
+          "type": "header",
+          "content": "t:sections.addons.comparison_table.settings.table_header.content"
+      },
+      {
+          "type": "select",
+          "id": "desktop_table_placement",
+          "label": "t:sections.addons.comparison_table.settings.desktop_table_placement.label",
+          "options": [
+              {
+                  "value": "left",
+                  "label": "t:sections.addons.comparison_table.settings.desktop_table_placement.option__1.label"
+              },
+              {
+                  "value": "right",
+                  "label": "t:sections.addons.comparison_table.settings.desktop_table_placement.option__2.label"
+              }
+          ],
+          "default": "right"
+      },
+      {
+          "type": "select",
+          "id": "table_style",
+          "label": "t:sections.addons.comparison_table.settings.table_style.label",
+          "options": [
+              {
+                  "value": "classic",
+                  "label": "t:sections.addons.comparison_table.settings.table_style.option__1.label"
+              },
+              {
+                  "value": "centered",
+                  "label": "t:sections.addons.comparison_table.settings.table_style.option__2.label"
+              },
+              {
+                  "value": "minimalistic",
+                  "label": "t:sections.addons.comparison_table.settings.table_style.option__3.label"
+              }
+          ],
+          "default": "classic"
+      },
+      {
+          "type": "header",
+          "content": "t:sections.addons.comparison_table.settings.shop_header.content"
+      },
+      {
+          "type": "image_picker",
+          "id": "shop_logo",
+          "label": "t:sections.addons.comparison_table.settings.shop_logo.content"
+      },
+      {
+          "type": "text",
+          "id": "shop_label",
+          "label": "t:sections.addons.comparison_table.settings.shop_label.label",
+          "info": "t:sections.addons.comparison_table.settings.shop_label.info",
+          "default": "Our Shop"
+      },
+      {
+          "type": "range",
+          "id": "shop_label_font_size",
+          "label": "t:sections.addons.comparison_table.settings.shop_label_font_size.label",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 18,
+          "unit": "px"
+      },
+      {
+          "type": "header",
+          "content": "t:sections.addons.comparison_table.settings.competitor_header.content"
+      },
+      {
+          "type": "image_picker",
+          "id": "competitor_logo",
+          "label": "t:sections.addons.comparison_table.settings.competitor_logo.label"
+      },
+      {
+          "type": "text",
+          "id": "competitor_label",
+          "label": "t:sections.addons.comparison_table.settings.competitor_label.label",
+          "default": "Competitor",
+          "info": "t:sections.addons.comparison_table.settings.competitor_label.info"
+      },
+      {
+          "type": "range",
+          "id": "competitor_font_size",
+          "label": "t:sections.addons.comparison_table.settings.competitor_label_font_size.label",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 18,
+          "unit": "px"
+      },
+      {
+          "type": "header",
+          "content": "t:sections.addons.comparison_table.settings.section_padding_header.content"
+      },
+      {
+          "type": "range",
+          "id": "section_top_padding",
+          "label": "t:sections.addons.comparison_table.settings.section_top_padding.label",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 32,
+          "unit": "px"
+      },
+      {
+          "type": "range",
+          "id": "section_bottom_padding",
+          "label": "t:sections.addons.comparison_table.settings.section_bottom_padding.label",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 32,
+          "unit": "px"
+      },
+      {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "t:sections.addons.comparison_table.settings.color.label",
+          "info": "t:sections.addons.comparison_table.settings.color.info",
+          "default": "background-1"
+      }
+  ],
+  "blocks": [
+      {
+          "type": "table_row",
+          "name": "t:sections.addons.comparison_table.blocks.table_row.name",
+          "settings": [
+              {
+                  "type": "text",
+                  "id": "label",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.label.label",
+                  "default": "Benefit 1"
+              },
+              {
+                  "type": "range",
+                  "id": "heading_font_size",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.heading_font_size.label",
+                  "min": 0,
+                  "max": 100,
+                  "step": 1,
+                  "default": 18,
+                  "unit": "px"
+              },
+              {
+                  "type": "checkbox",
+                  "id": "enable_store",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.enable_store.label",
+                  "default": true
+              },
+              {
+                  "type": "checkbox",
+                  "id": "competitor",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.enable_competitor.label",
+                  "default": false
+              },
+              {
+                  "type": "richtext",
+                  "id": "subheading",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.subheading.label",
+                  "info": "t:sections.addons.comparison_table.blocks.table_row.settings.subheading.info",
+                  "default": "<p>Benefit sub heading</p>"
+              },
+              {
+                  "type": "header",
+                  "content": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_header.content"
+              },
+              {
+                  "type": "select",
+                  "id": "column_value_display_type",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_display_type.label",
+                  "options": [
+                      {
+                          "value": "icon",
+                          "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_display_type.option__1.label"
+                      },
+                      {
+                          "value": "label",
+                          "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_display_type.option__2.label"
+                      }
+                  ],
+                  "default": "icon"
+              },
+              {
+                  "type": "image_picker",
+                  "id": "column_value_icon_1",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_1.label",
+                  "info": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_1.info"
+              },
+              {
+                  "type": "text",
+                  "id": "column_value_label_1",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_label_1.label",
+                  "info": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_label_1.info",
+                  "default": "Yes"
+              },
+              {
+                  "type": "image_picker",
+                  "id": "column_value_icon_2",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_2.label",
+                  "info": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_2.info"
+              },
+              {
+                  "type": "text",
+                  "id": "column_value_label_2",
+                  "label": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_label_2.label",
+                  "info": "t:sections.addons.comparison_table.blocks.table_row.settings.column_value_icon_label_2.info",
+                  "default": "No"
+              }
+          ]
+      }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.addons.comparison_table.name",
+      "blocks": [
+        {
+          "type": "table_row"
+        },
+        {
+          "type": "table_row"
+        },
+        {
+          "type": "table_row"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

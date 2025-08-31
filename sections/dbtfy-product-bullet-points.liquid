@@ -1,0 +1,311 @@
+{%- liquid
+  assign position = section.settings.position
+  assign position_in_description = section.settings.position_in_description
+  assign show_one_per_line = section.settings.show_one_per_line
+  assign bullet_type = section.settings.bullet_type
+  assign text_alignment = section.settings.text_alignment
+
+  for block in section.blocks
+    if block.settings.show_as_collapsible_tab
+      assign show_one_per_line = true
+
+      break
+    endif
+  endfor
+-%}
+
+{%- capture section_settings -%}
+  {
+    "position": {{ position | json }},
+    "positionInDescription": {{ position_in_description | json }},
+    "showOnePerLine": {{ show_one_per_line | json }},
+    "bulletType": {{ bullet_type | json }},
+    "textAlignment": {{ text_alignment | json }}
+  }
+{%- endcapture -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="dbtfy-product-bullet-points" data-section-settings='{{ section_settings }}' hidden>
+    <ul>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign heading = block.settings.title
+          assign icon = block.settings.icon
+          assign show_as_collapsible_tab = block.settings.show_as_collapsible_tab
+          assign collapsible_tab_content = block.settings.collapsible_tab_content
+          assign visibility = block.settings.visibility
+          assign collection = block.settings.collection
+          assign types = block.settings.types
+          assign tags = block.settings.tags
+          assign product = block.settings.product
+
+          assign show_as_collapsible_tab_condition = false
+
+          if show_as_collapsible_tab and collapsible_tab_content != blank
+            assign show_as_collapsible_tab_condition = true
+          endif
+        -%}
+
+        {%- capture block_settings -%}
+          {
+            "visibility": {{ visibility | json }},
+            "collection": {{ collection | json }},
+            "types": {{ types | json }},
+            "tags": {{ tags | json }},
+            "productId": {{ product.id | json }}
+          }
+        {%- endcapture -%}
+
+        {%- if heading != blank -%}
+          <li class="dbtfy-product-bullet-points__point{% if show_as_collapsible_tab_condition %}{% endif %}" data-block-settings='{{ block_settings }}' {{ block.shopify_attributes }}>
+            {%- if show_as_collapsible_tab_condition -%}
+              <collapsible-tab class="collapsible-tab">
+                <details class="transition-input" data-block-id="{{ block.id }}">
+                  <summary>
+                    <div class="d-flex">
+                      <div class="{% if bullet_type == 'icon' and icon != blank %}d-flex{% else %}dbtfy-product-bullet-points__tab-header{% endif %}">
+                        {%- if bullet_type == 'icon' and icon != blank -%}
+                          <span class="{{ settings.icon }} icon icon--width text-secondary" translate="no">
+                            {{- icon -}}
+                          </span>
+                        {%- endif -%}
+
+                        {{- heading -}}
+                      </div>
+
+                      <span class="ms-2 flex-shrink-0">
+                        {%- render 'icon', icon: 'arrow-down' -%}
+                      </span>
+                    </div>
+                  </summary>
+
+                  <div class="collapsible-tab__content overflow-hidden">
+                    <div class="p-2 ps-4 rte mb-sm">
+                      {{- collapsible_tab_content -}}
+                    </div>
+                  </div>
+                </details>
+              </collapsible-tab>
+            {%- else -%}
+              {%- if bullet_type == 'icon' and icon != blank -%}
+                <span class="{{ settings.icon }} icon icon--width text-secondary" translate="no">
+                  {{- icon -}}
+                </span>
+              {%- endif -%}
+
+              {{- heading -}}
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.addons.product_bullet_points.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.addons.help_center.header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.product_bullet_points.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.enable_disable.content"
+    },
+    {
+      "type": "header",
+      "content": "t:general.addons.settings.header.content"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "default": "separate-block",
+      "options": [
+        {
+          "value": "separate-block",
+          "label": "Separate block"
+        },
+        {
+          "value": "in-description",
+          "label": "In description"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position_in_description",
+      "label": "Position in description",
+      "default": "above",
+      "options": [
+        {
+          "value": "above",
+          "label": "Above description"
+        },
+        {
+          "value": "below",
+          "label": "Below description"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_one_per_line",
+      "label": "t:sections.addons.product_bullet_points.settings.show_one_per_line.label",
+      "info": "t:sections.addons.product_bullet_points.settings.show_one_per_line.info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "bullet_type",
+      "label": "Bullet type",
+      "default": "icon",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "numbers",
+          "label": "Numbers"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "rounded",
+          "label": "Rounded"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:general.settings.text_alignment.label",
+      "default": "justify-content-start text-start",
+      "options": [
+        {
+          "value": "justify-content-start text-start",
+          "label": "t:general.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "justify-content-center text-center",
+          "label": "t:general.settings.text_alignment.options__2.label"
+        },
+        {
+          "value": "justify-content-end text-end",
+          "label": "t:general.settings.text_alignment.options__3.label"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "t:sections.addons.product_bullet_points.blocks.point.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:general.sections.blocks.block_name.label",
+          "info": "t:general.sections.blocks.block_name.info"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.addons.product_bullet_points.blocks.point.settings.header__1.content"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "t:sections.addons.product_bullet_points.blocks.point.settings.heading.label"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "t:general.settings.icon.label",
+          "info": "t:general.settings.icon.info",
+          "default": "check_circle"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_as_collapsible_tab",
+          "label": "Show as collapsible tab",
+          "info": "This bullet point will act as collapsible tab to show nested content. If enable, all points will be stacked."
+        },
+        {
+          "type": "inline_richtext",
+          "id": "collapsible_tab_content",
+          "label": "Collapsible tab content"
+        },
+        {
+          "type": "header",
+          "content": "t:general.settings.visibility.header.content",
+          "info": "t:general.settings.visibility.header.info"
+        },
+        {
+          "type": "radio",
+          "id": "visibility",
+          "label": "t:general.settings.visibility.visibility.label",
+          "info": "t:general.settings.visibility.visibility.info",
+          "default": "all",
+          "options": [
+            {
+              "value": "all",
+              "label": "t:general.settings.visibility.visibility.options__1.label"
+            },
+            {
+              "value": "collection",
+              "label": "t:general.settings.visibility.visibility.options__2.label"
+            },
+            {
+              "value": "type",
+              "label": "t:general.settings.visibility.visibility.options__3.label"
+            },
+            {
+              "value": "tag",
+              "label": "t:general.settings.visibility.visibility.options__4.label"
+            },
+            {
+              "value": "product",
+              "label": "t:general.settings.visibility.visibility.options__5.label"
+            }
+          ]
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:general.settings.visibility.collection.label"
+        },
+        {
+          "type": "text",
+          "id": "types",
+          "label": "t:general.settings.visibility.types.label",
+          "info": "t:general.settings.visibility.types.info"
+        },
+        {
+          "type": "text",
+          "id": "tags",
+          "label": "t:general.settings.visibility.tags.label",
+          "info": "t:general.settings.visibility.tags.info"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:general.settings.visibility.product.label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

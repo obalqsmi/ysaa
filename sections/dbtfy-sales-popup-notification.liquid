@@ -1,0 +1,524 @@
+{% liquid
+  assign template_style = section.settings.template_style
+  assign template_position = section.settings.template_position
+  assign template_position_for_mobile = section.settings.template_position_for_mobile
+  assign hide_powered_by_debutify = section.settings.hide_powered_by_debutify
+  assign enable_notification_sound = section.settings.enable_notification_sound
+  assign enable_multiple_purchases = section.settings.enable_multiple_purchases
+  assign show_notification_in_queue = section.settings.show_notification_in_queue
+  assign popup_animation_style = section.settings.popup_animation_style
+  assign template_radius = section.settings.template_radius
+  assign enalbe_homepage = section.settings.enalbe_homepage
+  assign enalbe_product_page = section.settings.enalbe_product_page
+  assign enable_collection_page = section.settings.enable_collection_page
+  assign product_image_shape = section.settings.product_image_shape
+  assign product_image_edge_radius = section.settings.product_image_edge_radius
+  assign product_image_width = section.settings.product_image_width
+  assign product_image_height = section.settings.product_image_height
+  assign delay_time = section.settings.delay_time
+  assign display_time = section.settings.display_time
+  assign activate_popup = section.settings.activate_popup
+  assign show_product_star_rating = section.settings.show_product_star_rating
+  assign show_button_for_detail = section.settings.show_button_for_detail
+  assign detail_button_text = section.settings.detail_button_text
+  assign customer_names = section.settings.customer_names
+  assign city_names = section.settings.city_names
+  assign products = section.settings.products
+  assign time = section.settings.time
+  assign show_low_stock_bar = section.settings.show_low_stock_bar
+  assign text_for_low_stock_bar = section.settings.text_for_low_stock_bar
+  assign threshold_quantity = section.settings.threshold_quantity
+  assign enable_badge = section.settings.enable_badge
+  assign badge_text = section.settings.badge_text
+  assign badge_icon = section.settings.badge_icon
+  assign custom_badge_icon = section.settings.custom_badge_icon
+  assign color_scheme = section.settings.color_scheme
+  assign opacity = section.settings.opacity
+  assign horizontal_offset = section.settings.horizontal_offset
+  assign vertical_offset = section.settings.vertical_offset
+  assign blur = section.settings.blur
+
+  assign enable_popup = false
+
+  if template.name == 'index' and enalbe_homepage
+    assign enable_popup = true
+  elsif template.name == 'product' and enalbe_product_page
+    assign enable_popup = true
+  elsif template.name == 'collection' and enable_collection_page
+    assign enable_popup = true
+  endif
+
+  for product in products
+    assign product_inventory_quantity = 0
+    for variant in product.variants
+      if variant.inventory_quantity > 0
+        assign product_inventory_quantity = product_inventory_quantity | plus: variant.inventory_quantity
+      endif
+    endfor
+    if forloop.first
+      assign product_titles = product.title
+      assign product_images = product.featured_image
+      assign product_urls = product.url
+      assign product_inventories = product_inventory_quantity
+    else
+      assign product_titles = product_titles | append: ',' | append: product.title
+      assign product_images = product_images | append: ',' | append: product.featured_image
+      assign product_urls = product_urls | append: ',' | append: product.url
+      assign product_inventories = product_inventories | append: ',' | append: product_inventory_quantity
+    endif
+  endfor
+%}
+
+<script>
+  window.sales_popup_notification_settings = {
+    "icon": {{ settings.icon | json }},
+    "enable_notification_sound": {{ enable_notification_sound | json }},
+    "popup_animation_style": {{ popup_animation_style | json }},
+    "product_image_shape": {{ product_image_shape | json }},
+    "product_image_edge_radius": {{ product_image_edge_radius | json }},
+    "product_image_width": {{ product_image_width | json }},
+    "product_image_height": {{ product_image_height | json }},
+    "show_product_star_rating": {{ show_product_star_rating | json }},
+    "show_button_for_detail": {{ show_button_for_detail | json }},
+    "detail_button_text": {{ detail_button_text | json }},
+    "customer_names": {{ customer_names | json }},
+    "city_names": {{ city_names | json }},
+    "time": {{ time | json }},
+    "show_low_stock_bar": {{ show_low_stock_bar | json }},
+    "text_for_low_stock_bar": {{ text_for_low_stock_bar | json }},
+    "threshold_quantity": {{ threshold_quantity | json }},
+    "enable_badge": {{ enable_badge | json }},
+    "badge_text": {{ badge_text | json }},
+    "badge_icon": {{ badge_icon | json }},
+    "custom_badge_icon": {{ custom_badge_icon | json }},
+    "delay_time": {{ delay_time | json }},
+    "display_time": {{ display_time | json }},
+    "show_notification_in_queue": {{ show_notification_in_queue | json }},
+    "enable_multiple_purchases": {{ enable_multiple_purchases | json }},
+    "dont_show_again": "{{ 'add-ons.sales_popup_notification.dont_show_again' | t }}",
+    "product_titles": {{ product_titles | json }},
+    "product_images": {{ product_images | json }},
+    "product_urls": {{ product_urls | json }},
+    "product_inventories": {{ product_inventories | json }}
+  }
+</script>
+
+<style>
+  .dbtfy-sales-popup-notification[data-section-id="{{ section.id }}"] .dbtfy-popup-notification-inner {
+      box-shadow: {{ vertical_offset }}px {{ horizontal_offset }}px {{ blur }}px rgba(0, 0, 0, {{ opacity | times: 1.0 | divided_by: 100 }});
+  }
+
+  .dbtfy-sales-popup-notification[data-section-id="{{ section.id }}"] .notification-style-radius-edge .dbtfy-popup-notification-inner {
+      border-radius: {{ template_radius }}px;
+  }
+</style>
+{% if enable_popup and products != blank %}
+  {% for product in products %}
+    <div class="dbtfy-sales-popup__review" hidden>
+      <div class="product__reviews">{% render 'review-badge', product: product, position: 'product_page' %}</div>
+    </div>
+  {% endfor %}
+  <div
+    class="dbtfy-sales-popup-notification notification-position-{{ template_position }} notification-position-mobile-{{ template_position_for_mobile }} color-{{ color_scheme }}"
+    data-section-id="{{ section.id }}"
+  >
+    {% if activate_popup %}
+      <div class="dbtfy-popup-notification notification-style-{{ template_style }}"></div>
+    {% endif %}
+    {% unless hide_powered_by_debutify %}
+      <span class="dbtfy-powered-by-debutify text-sm">
+        {{- 'add-ons.sales_popup_notification.powered_by_debutify' | t -}}
+      </span>
+    {% endunless %}
+  </div>
+{% endif %}
+{% schema %}
+{
+  "name": "t:sections.addons.sales_popup_notification.name",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.addons.sales_popup_notification.settings.paragraph__1.content"
+    },
+    {
+      "type": "header",
+      "content": "t:general.addons.help_center.header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.sales_popup_notification.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:general.addons.help_center.enable_disable.content"
+    },
+    {
+      "type": "select",
+      "id": "template_style",
+      "label": "t:sections.addons.sales_popup_notification.settings.template_style.label",
+      "default": "square",
+      "options": [
+        {
+          "value": "square",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_style.options__1.label"
+        },
+        {
+          "value": "radius-edge",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_style.options__2.label"
+        },
+        {
+          "value": "round",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_style.options__3.label"
+        },
+        {
+          "value": "round-square",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_style.options__4.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "template_position",
+      "label": "t:sections.addons.sales_popup_notification.settings.template_position.label",
+      "default": "bottom-left",
+      "options": [
+        {
+          "value": "bottom-left",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__1.label"
+        },
+        {
+          "value": "bottom-center",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__2.label"
+        },
+        {
+          "value": "bottom-right",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__3.label"
+        },
+        {
+          "value": "top-left",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__4.label"
+        },
+        {
+          "value": "top-center",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__5.label"
+        },
+        {
+          "value": "top-right",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position.options__6.label"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "template_position_for_mobile",
+      "label": "t:sections.addons.sales_popup_notification.settings.template_position_for_mobile.label",
+      "default": "bottom",
+      "options": [
+        {
+          "value": "bottom",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position_for_mobile.options__1.label"
+        },
+        {
+          "value": "top",
+          "label": "t:sections.addons.sales_popup_notification.settings.template_position_for_mobile.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_powered_by_debutify",
+      "label": "t:sections.addons.sales_popup_notification.settings.hide_powered_by_debutify.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_notification_sound",
+      "label": "t:sections.addons.sales_popup_notification.settings.enable_notification_sound.label",
+      "default": true
+    },
+
+    {
+      "type": "select",
+      "id": "popup_animation_style",
+      "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.label",
+      "default": "slide-up",
+      "options": [
+        {
+          "value": "slide-up",
+          "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.options__1.label"
+        },
+        {
+          "value": "slide-right",
+          "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.options__2.label"
+        },
+        {
+          "value": "slide-left",
+          "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.options__3.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.options__4.label"
+        },
+        {
+          "value": "bounce",
+          "label": "t:sections.addons.sales_popup_notification.settings.popup_animation_style.options__5.label"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "template_radius",
+      "label": "t:sections.addons.sales_popup_notification.settings.template_radius.label",
+      "default": 8,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.addons.sales_popup_notification.settings.header__1.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.addons.sales_popup_notification.settings.paragraph__2.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enalbe_homepage",
+      "label": "t:sections.addons.sales_popup_notification.settings.enalbe_homepage.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enalbe_product_page",
+      "label": "t:sections.addons.sales_popup_notification.settings.enalbe_product_page.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_collection_page",
+      "label": "t:sections.addons.sales_popup_notification.settings.enable_collection_page.label",
+      "default": true
+    },
+
+    {
+      "type": "select",
+      "id": "product_image_shape",
+      "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.label",
+      "default": "square",
+      "options": [
+        {
+          "value": "square",
+          "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.options__1.label"
+        },
+        {
+          "value": "circle",
+          "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.options__2.label"
+        },
+        {
+          "value": "rounded",
+          "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.options__3.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.options__4.label"
+        },
+        {
+          "value": "landscape",
+          "label": "t:sections.addons.sales_popup_notification.settings.product_image_shape.options__5.label"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "product_image_edge_radius",
+      "label": "t:sections.addons.sales_popup_notification.settings.product_image_edge_radius.label",
+      "default": 12,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "product_image_width",
+      "label": "t:sections.addons.sales_popup_notification.settings.product_image_width.label",
+      "default": 100,
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "product_image_height",
+      "label": "t:sections.addons.sales_popup_notification.settings.product_image_height.label",
+      "default": 100,
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px"
+    },
+
+    {
+      "type": "range",
+      "id": "display_time",
+      "label": "t:sections.addons.sales_popup_notification.settings.display_time.label",
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "activate_popup",
+      "label": "t:sections.addons.sales_popup_notification.settings.activate_popup.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_star_rating",
+      "label": "t:sections.addons.sales_popup_notification.settings.show_product_star_rating.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_for_detail",
+      "label": "t:sections.addons.sales_popup_notification.settings.show_button_for_detail.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "detail_button_text",
+      "label": "t:sections.addons.sales_popup_notification.settings.detail_button_text.label",
+      "default": "See detail"
+    },
+    {
+      "type": "textarea",
+      "id": "customer_names",
+      "label": "t:sections.addons.sales_popup_notification.settings.customer_names.label",
+      "default": "Edward,Anna,Cristina,James,Michael,Rovert,John,David,William,Ricahrd"
+    },
+    {
+      "type": "textarea",
+      "id": "city_names",
+      "label": "t:sections.addons.sales_popup_notification.settings.city_names.label",
+      "default": "Califonia,Illinois,New York,Seattle,Chicago,Austin,Denver,San Francisco,Boston,Portland"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "t:sections.addons.sales_popup_notification.settings.product.label"
+    },
+    {
+      "type": "text",
+      "id": "time",
+      "label": "t:sections.addons.sales_popup_notification.settings.time.label",
+      "default": "1 min ago"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_low_stock_bar",
+      "label": "t:sections.addons.sales_popup_notification.settings.show_low_stock_bar.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "text_for_low_stock_bar",
+      "label": "t:sections.addons.sales_popup_notification.settings.text_for_low_stock_bar.label",
+      "default": "Only _STOCK_ items in stock!"
+    },
+    {
+      "type": "range",
+      "id": "threshold_quantity",
+      "label": "t:sections.addons.sales_popup_notification.settings.threshold_quantity.label",
+      "default": 10,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "info": "t:sections.addons.sales_popup_notification.settings.threshold_quantity.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.addons.sales_popup_notification.settings.header__3.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_badge",
+      "label": "t:sections.addons.sales_popup_notification.settings.enable_badge.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "t:sections.addons.sales_popup_notification.settings.badge_text.label",
+      "default": "sale"
+    },
+    {
+      "type": "text",
+      "id": "badge_icon",
+      "label": "t:sections.addons.sales_popup_notification.settings.badge_icon.label",
+      "info": "t:sections.addons.sales_popup_notification.settings.badge_icon.info",
+      "default": "shield"
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_badge_icon",
+      "label": "t:sections.addons.sales_popup_notification.settings.custom_badge_icon.label",
+      "info": "t:sections.addons.sales_popup_notification.settings.custom_badge_icon.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.addons.sales_popup_notification.settings.color_scheme.label",
+      "default": "background-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.addons.sales_popup_notification.settings.header__2.content"
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "t:sections.addons.sales_popup_notification.settings.opacity.label",
+      "default": 5,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "horizontal_offset",
+      "label": "t:sections.addons.sales_popup_notification.settings.horizontal_offset.label",
+      "default": 4,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "vertical_offset",
+      "label": "t:sections.addons.sales_popup_notification.settings.vertical_offset.label",
+      "default": 4,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "blur",
+      "label": "t:sections.addons.sales_popup_notification.settings.blur.label",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}
