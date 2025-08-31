@@ -1,0 +1,570 @@
+<section id="ysa-hero-{{ section.id }}" class="ysa-hero" style="--header-offset: {{ section.settings.header_offset | default: 0 }}px;">
+  <!-- Google Fonts (shared) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== SHARED BACKDROP ====== */
+    #ysa-hero-{{ section.id }}{
+      --bg-900:#050816; --bg-800:#091025;
+      --cyber-500:#12b4ff; --cyber-400:#4fdcff; --cyber-300:#86f2ff;
+      --text-100:#e8f6ff; --text-300:#b0c8e8;
+      --h1: clamp(40px, 7vw, 108px); --sub: clamp(16px, 2vw, 24px); --btn: clamp(14px, 1.2vw, 16px);
+      --gap-featured: {{ section.settings.gap_featured_top | default: 56 }}px;
+      --gap-how: {{ section.settings.gap_how_top | default: 72 }}px;
+      --gap-reviews: {{ section.settings.gap_reviews_top | default: 72 }}px;
+      --gap-footer: {{ section.settings.gap_footer_top | default: 72 }}px;
+      position:relative;width:100%;color:var(--text-100);overflow:hidden;
+      background: radial-gradient(1200px 600px at 70% 10%, rgba(0,229,255,.18), transparent 60%),
+                  radial-gradient(900px 420px at 20% 80%, rgba(75,107,255,.16), transparent 60%),
+                  linear-gradient(180deg, var(--bg-800) 0%, var(--bg-900) 100%);
+      isolation:isolate;font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+    }
+    #ysa-hero-{{ section.id }}::before{
+      content:"";position:absolute;inset:-10%;opacity:.15;z-index:-3;
+      background: linear-gradient(transparent 96%, rgba(79,220,255,.2) 96%) 0 0/100% 30px,
+                  linear-gradient(90deg, transparent 96%, rgba(79,220,255,.2) 96%) 0 0/30px 100%;
+    }
+
+    /* MATRIX RAIN */
+    #ysa-hero-{{ section.id }} canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;filter:drop-shadow(0 0 6px rgba(79,220,255,.35));}
+
+    /* HERO */
+    #ysa-hero-{{ section.id }} .hero-viewport{min-height:calc(100svh - var(--header-offset,0px));display:flex;flex-direction:column;width:100%;}
+    #ysa-hero-{{ section.id }} .hero-viewport .ysa-center{flex:1;display:flex;flex-direction:column;justify-content:center;}
+    #ysa-hero-{{ section.id }} .ysa-center{ text-align:center; width:min(1100px, 92vw); padding: clamp(20px, 3vw, 40px); margin: 0 auto; }
+    #ysa-hero-{{ section.id }} h1{
+      margin:0 0 clamp(14px,2vh,22px) 0; line-height:.98; font-family:"Orbitron",sans-serif; font-weight:800; font-size:var(--h1); letter-spacing:.6px;
+      background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 36px rgba(18,180,255,.35);
+    }
+    #ysa-hero-{{ section.id }} .sub{ color:var(--text-300); font-size:var(--sub); line-height:1.65; margin:0 auto clamp(18px, 3vh, 28px); max-width: 900px; }
+    #ysa-hero-{{ section.id }} .ysa-cta{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top: clamp(8px, 1.6vh, 18px); }
+    #ysa-hero-{{ section.id }} .ysa-btn{ display:inline-flex; align-items:center; gap:10px; justify-content:center; padding: clamp(12px,1.4vw,16px) clamp(20px,2.4vw,26px); border-radius:16px; text-decoration:none; font-weight:800; font-size:var(--btn); transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease; cursor:pointer; font-family:"Outfit",sans-serif; }
+    #ysa-hero-{{ section.id }} .icon{ width:18px; height:18px; display:inline-block; }
+    #ysa-hero-{{ section.id }} .icon svg{ width:100%; height:100%; fill: currentColor; }
+    #ysa-hero-{{ section.id }} .primary{ background: radial-gradient(120% 120% at 30% 30%, #4fdcff, #12b4ff); color:#001018; border:1px solid rgba(134,242,255,.35); box-shadow: 0 8px 28px rgba(18,180,255,.38), inset 0 0 16px rgba(255,255,255,.18); }
+    #ysa-hero-{{ section.id }} .primary:hover{ transform: translateY(-4px) scale(1.03); box-shadow: 0 12px 38px rgba(18,180,255,.58), inset 0 0 22px rgba(255,255,255,.25); }
+    #ysa-hero-{{ section.id }} .ghost{ border:1px solid rgba(134,242,255,.42); color:var(--cyber-300); background: linear-gradient(180deg, rgba(6,16,34,.72), rgba(6,12,25,.54)); box-shadow: inset 0 0 12px rgba(79,220,255,.10); }
+    #ysa-hero-{{ section.id }} .ghost:hover{ transform: translateY(-4px) scale(1.03); border-color: rgba(134,242,255,.7); box-shadow: 0 12px 32px rgba(18,180,255,.28), inset 0 0 18px rgba(79,220,255,.18); color:#fff; }
+    #ysa-hero-{{ section.id }} .trust{ margin-top: clamp(16px, 2vh, 24px); color:var(--text-300); display:flex; align-items:center; gap:12px; justify-content:center; flex-wrap:wrap; font-size:clamp(13px,1vw,15px); }
+    #ysa-hero-{{ section.id }} .stars{ display:inline-flex; gap:4px; }
+    #ysa-hero-{{ section.id }} .stars svg{ width:18px; height:18px; }
+
+    /* ===== DIVIDERS (edge-to-edge with stronger glow) ===== */
+    #ysa-hero-{{ section.id }} .ysa-divider{
+      display: {% if section.settings.show_dividers %}block{% else %}none{% endif %};
+      position:relative;
+      left:50%;
+      transform:translateX(-50%);
+      width:100vw;          /* reach the very edges */
+      max-width:100vw;
+      height:1px;
+      margin:0;             /* default, we control per-instance */
+      background: linear-gradient(90deg,
+                  rgba(18,180,255,0) 0%,
+                  rgba(18,180,255,.85) 12%,
+                  rgba(18,180,255,.95) 50%,
+                  rgba(18,180,255,.85) 88%,
+                  rgba(18,180,255,0) 100%);
+      box-shadow: 0 0 22px rgba(18,180,255,.65), 0 0 38px rgba(18,180,255,.35);
+      opacity:.9;
+    }
+    /* space before the divider (below the ticker) stays tight */
+    #ysa-hero-{{ section.id }} .ysa-divider--tight{
+      margin-top: 12px;
+    }
+
+    /* TICKER */
+    #ysa-hero-{{ section.id }} .ysa-ticker{ position:relative; width:100%; overflow:hidden; z-index:1; padding: 12px 0; margin-top:auto; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%); }
+    #ysa-hero-{{ section.id }} .ysa-ticker .lane{ display:flex; gap:14px; width:max-content; padding-left: 2vw; animation: ysa-marquee-{{ section.id }} 30s linear infinite; }
+    #ysa-hero-{{ section.id }} .ysa-ticker .wrap{ display:flex; width:max-content; }
+    @keyframes ysa-marquee-{{ section.id }}{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    #ysa-hero-{{ section.id }} .ysa-ticker .pill{ display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:999px; white-space:nowrap; background: rgba(6,16,34,.65); border:1px solid rgba(134,242,255,.14); box-shadow: inset 0 0 12px rgba(79,220,255,.08); color:#a6dfff; font-size:14px; }
+    #ysa-hero-{{ section.id }} .ysa-ticker .icon{ width:16px; height:16px; display:inline-block; }
+    #ysa-hero-{{ section.id }} .ysa-ticker .icon svg{ width:100%; height:100%; fill:#36d3ff; }
+
+    /* FEATURED PRODUCTS (up to 4) */
+    #ysa-hero-{{ section.id }} .featured{ width:min(1280px, 94vw); margin: var(--gap-featured) auto clamp(36px, 8vh, 72px); }
+    #ysa-hero-{{ section.id }} .featured .head{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-bottom: clamp(18px, 3vh, 28px); }
+    #ysa-hero-{{ section.id }} .featured .title{ grid-column:1 / -1; text-align:center; margin:0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(24px, 3.2vw, 40px); letter-spacing:.4px; background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
+    #ysa-hero-{{ section.id }} .featured .right{ grid-column:1 / -1; display:flex; justify-content:flex-end; }
+    #ysa-hero-{{ section.id }} .featured .view-all{ display:inline-flex; align-items:center; gap:8px; color:var(--cyber-300); text-decoration:none; font-weight:700; padding:8px 12px; border-radius:999px; border:1px solid rgba(134,242,255,.25); background: linear-gradient(180deg, rgba(6,16,34,.65), rgba(6,12,25,.45)); box-shadow: inset 0 0 12px rgba(79,220,255,.10); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease; }
+    #ysa-hero-{{ section.id }} .featured .view-all:hover{ transform: translateY(-6px) scale(1.01); border-color: rgba(134,242,255,.6); color:#fff; text-shadow:0 0 16px rgba(79,220,255,.55); box-shadow: 0 12px 28px rgba(18,180,255,.22), inset 0 0 16px rgba(79,220,255,.16); }
+    #ysa-hero-{{ section.id }} .featured .grid{ display:grid; gap: clamp(14px, 2vw, 24px); grid-template-columns: 1fr; }
+    @media (min-width: 760px){ #ysa-hero-{{ section.id }} .featured .grid{ grid-template-columns: repeat(2,1fr); } }
+    @media (min-width: 1100px){ #ysa-hero-{{ section.id }} .featured .grid{ grid-template-columns: repeat({{ section.settings.featured_columns_desktop | default: 4 }}, 1fr); } }
+
+    #ysa-hero-{{ section.id }} .card{ height:100%; display:flex; flex-direction:column; overflow:hidden; border-radius:16px; border:1px solid rgba(112,226,255,.20); background:#0b1226; box-shadow: 0 12px 32px rgba(0,0,0,.35); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; will-change: transform; }
+    #ysa-hero-{{ section.id }} .card:hover, #ysa-hero-{{ section.id }} .card:focus-within{ transform: translateY(-6px) scale(1.01); border-color: rgba(134,242,255,.55); box-shadow: 0 18px 44px rgba(18,180,255,.28), 0 0 0 1px rgba(134,242,255,.18); outline:none; }
+    #ysa-hero-{{ section.id }} .media{ position:relative; aspect-ratio:16/9; overflow:hidden; background:#0e152c; }
+    #ysa-hero-{{ section.id }} .media img{ width:100%; height:100%; object-fit:cover; transition: transform .5s ease; }
+    #ysa-hero-{{ section.id }} .card:hover .media img{ transform: scale(1.05); }
+    #ysa-hero-{{ section.id }} .media::after{ content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: linear-gradient(90deg, rgba(18,180,255,0) 0%, rgba(18,180,255,.9) 20%, #4fdcff 50%, rgba(18,180,255,.9) 80%, rgba(18,180,255,0) 100%); box-shadow: 0 0 14px rgba(18,180,255,.65), 0 0 28px rgba(18,180,255,.35); }
+    #ysa-hero-{{ section.id }} .tuned{ position:absolute; top:10px; right:10px; z-index:1; display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:12px; font-size:12px; font-weight:800; background:#11261a; border:1px solid rgba(120,255,180,.35); color:#9effc8; box-shadow: inset 0 0 10px rgba(120,255,180,.18), 0 0 12px rgba(120,255,180,.18); }
+    #ysa-hero-{{ section.id }} .tuned svg{ width:14px; height:14px; fill:#9effc8 }
+    #ysa-hero-{{ section.id }} .body{ padding: clamp(14px, 1.8vw, 20px); display:flex; flex-direction:column; gap:10px; flex:1; }
+    #ysa-hero-{{ section.id }} .prod-title{ margin:0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(16px, 1.4vw, 20px); line-height:1.2; }
+    #ysa-hero-{{ section.id }} .desc{ color:var(--text-300); font-size:14px; }
+    #ysa-hero-{{ section.id }} .quick-badges{ display:flex; flex-wrap:wrap; gap:8px; }
+    #ysa-hero-{{ section.id }} .pill{ display:inline-flex; align-items:center; padding:6px 10px; border-radius:12px; font-size:12px; font-weight:800; white-space:nowrap; border:1px solid rgba(134,242,255,.25); box-shadow: inset 0 0 12px rgba(79,220,255,.08); }
+    .pill--undetected{ background:#0f2a1f; color:#b7ffd9; }
+    .pill--premium{ background:#153326; color:#b7ffd9; }
+    .pill--off{ background:#144c3a; color:#e8fff5; border-color: rgba(134,242,255,.35); box-shadow: 0 4px 16px rgba(18,180,255,.15), inset 0 0 10px rgba(255,255,255,.10); }
+    #ysa-hero-{{ section.id }} .rating{ display:flex; align-items:center; gap:8px; color:var(--text-300); font-size:13px; filter: drop-shadow(0 0 8px rgba(18,180,255,.45)); }
+    #ysa-hero-{{ section.id }} .rating .stars{ display:inline-flex; gap:4px; }
+    #ysa-hero-{{ section.id }} .rating .stars svg{ width:16px; height:16px; }
+    #ysa-hero-{{ section.id }} .price-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:6px; }
+    #ysa-hero-{{ section.id }} .from{ color:var(--text-300); font-weight:700; margin-right:4px; text-transform:uppercase; font-size:12px; letter-spacing:.3px; }
+    #ysa-hero-{{ section.id }} .price{ font-weight:800; font-size:18px; color:#fff; text-shadow:0 0 14px rgba(79,220,255,.25); }
+    #ysa-hero-{{ section.id }} .compare{ color:var(--text-300); text-decoration:line-through; font-size:14px; opacity:.85; }
+    #ysa-hero-{{ section.id }} .hr{ height:1px; width:100%; background:rgba(255,255,255,.08); margin: 12px 0 8px 0; }
+    #ysa-hero-{{ section.id }} .bottom-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    #ysa-hero-{{ section.id }} .ptype{ color:var(--text-300); font-size:12px; }
+    #ysa-hero-{{ section.id }} .btn{ display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:12px 16px; border-radius:14px; font-weight:800; cursor:pointer; border:1px solid rgba(134,242,255,.35); background: radial-gradient(120% 120% at 30% 30%, #4fdcff, #12b4ff); color:#001018; text-decoration:none; font-size:var(--btn); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease, background .2s ease, filter .2s ease; box-shadow: 0 8px 22px rgba(18,180,255,.32), inset 0 0 14px rgba(255,255,255,.18); }
+    #ysa-hero-{{ section.id }} .btn:hover, #ysa-hero-{{ section.id }} .btn:focus-visible{ transform: translateY(-6px) scale(1.03); box-shadow: 0 16px 40px rgba(18,180,255,.55), 0 0 24px rgba(79,220,255,.45), inset 0 0 18px rgba(255,255,255,.24); outline: none; }
+
+    /* HOW */
+    #ysa-hero-{{ section.id }} .how{ width:min(1280px, 94vw); margin: var(--gap-how) auto clamp(48px, 10vh, 96px); text-align:center; }
+    #ysa-hero-{{ section.id }} .how .how-title{ margin:0 0 6px 0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(24px, 3vw, 42px); background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
+    #ysa-hero-{{ section.id }} .how .how-sub{ color:var(--text-300); font-size: clamp(14px, 1.6vw, 18px); margin: 0 auto clamp(18px, 3vh, 28px); max-width: 900px; }
+    #ysa-hero-{{ section.id }} .how-grid{ display:grid; grid-template-columns: 1fr; gap: clamp(14px, 2vw, 24px); margin-top: clamp(10px, 2vh, 20px); text-align:left; }
+    @media (min-width: 680px){ #ysa-hero-{{ section.id }} .how-grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1100px){ #ysa-hero-{{ section.id }} .how-grid{ grid-template-columns: repeat({{ section.settings.how_columns_desktop | default: 4 }}, 1fr); } }
+    #ysa-hero-{{ section.id }} .how-card{ border-radius:16px; border:1px solid rgba(134,242,255,.14); background:#0b1226; box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); padding: clamp(14px, 1.8vw, 20px); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; will-change: transform; }
+    #ysa-hero-{{ section.id }} .how-card:hover{ transform: translateY(-6px) scale(1.01); border-color: rgba(134,242,255,.55); box-shadow: 0 18px 44px rgba(18,180,255,.28), 0 0 0 1px rgba(134,242,255,.18); }
+    #ysa-hero-{{ section.id }} .chip{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; font-weight:800; font-size:13px; background: radial-gradient(120% 120% at 30% 30%, var(--cyber-400), var(--cyber-500)); color:#001018; border:1px solid rgba(134,242,255,.45); box-shadow: 0 6px 18px rgba(18,180,255,.35), inset 0 0 8px rgba(255,255,255,.18); margin-bottom:10px; }
+    #ysa-hero-{{ section.id }} .how-title-sm{ margin:0 0 6px 0; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(16px, 1.4vw, 20px); }
+    #ysa-hero-{{ section.id }} .how-body{ margin:0; color:var(--text-300); font-size:14px; line-height:1.6; }
+    #ysa-hero-{{ section.id }} .how-divider{ height:1px; background:rgba(200,220,255,.12); margin: 12px 0; }
+    #ysa-hero-{{ section.id }} .how-cta-wrap{ margin-top: clamp(18px, 3vh, 28px); display:flex; justify-content:center; }
+    #ysa-hero-{{ section.id }} .how-btn{ display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:14px 22px; border-radius:10px; font-weight:800; cursor:pointer; border:1px solid rgba(134,242,255,.35); background: linear-gradient(90deg, var(--cyber-400), var(--cyber-500)); color:#001018; text-decoration:none; font-size: clamp(14px,1.2vw,16px); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease, background .2s ease, filter .2s ease; box-shadow: 0 10px 26px rgba(18,180,255,.35), inset 0 0 14px rgba(255,255,255,.18); }
+    #ysa-hero-{{ section.id }} .how-btn:hover{ transform: translateY(-6px) scale(1.03); box-shadow: 0 18px 44px rgba(18,180,255,.55), 0 0 24px rgba(79,220,255,.45), inset 0 0 18px rgba(255,255,255,.24); }
+
+    /* REVIEWS (auto-scroll) */
+    #ysa-hero-{{ section.id }} .reviews{ width:min(1280px, 94vw); margin: var(--gap-reviews) auto clamp(48px, 10vh, 100px); position:relative; }
+    #ysa-hero-{{ section.id }} .reviews-title{ margin:0; text-align:center; font-family:"Orbitron",sans-serif; font-weight:800; font-size: clamp(24px, 3vw, 38px); background: conic-gradient(from 210deg,#bff5ff 0%, #76e6ff 25%, var(--cyber-500) 55%, #7dd6ff 80%, #d9fbff 100%); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 24px rgba(18,180,255,.28); }
+    #ysa-hero-{{ section.id }} .reviews-sub{ text-align:center; color:var(--text-300); margin: 8px auto 16px; max-width:900px; font-size: clamp(14px, 1.4vw, 18px); }
+
+    #ysa-hero-{{ section.id }} .auto-wrap{ position:relative; overflow:hidden; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 2%, #000 99%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
+    #ysa-hero-{{ section.id }} .auto-lane{ display:flex; gap:16px; width:max-content; padding: 8px 2vw 24px; animation: ysa-rev-{{ section.id }} var(--rev-dur, 40s) linear infinite; }
+    #ysa-hero-{{ section.id }} .auto-lane:nth-child(2){ animation-delay: calc(var(--rev-dur, 40s) / -2); }
+    @keyframes ysa-rev-{{ section.id }}{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    #ysa-hero-{{ section.id }} .review-card{ flex: 0 0 360px; border-radius:16px; border:1px solid rgba(134,242,255,.14); background:#0b1226; box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 0 60px rgba(79,220,255,.06); padding:14px; min-height:160px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    #ysa-hero-{{ section.id }} .review-card:hover{ transform: translateY(-6px) scale(1.01); border-color: rgba(134,242,255,.55); box-shadow: 0 18px 44px rgba(18,180,255,.28), 0 0 0 1px rgba(134,242,255,.18); }
+    #ysa-hero-{{ section.id }} .rev-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    #ysa-hero-{{ section.id }} .avatar{ width:34px; height:34px; border-radius:50%; background: radial-gradient(120% 120% at 30% 30%, var(--cyber-300), var(--cyber-500)); color:#001018; display:grid; place-items:center; font-weight:800; border:1px solid rgba(134,242,255,.45); box-shadow: 0 4px 14px rgba(18,180,255,.35), inset 0 0 8px rgba(255,255,255,.18); font-size:13px; flex:0 0 34px; }
+    #ysa-hero-{{ section.id }} .rev-name{ font-weight:800; }
+    #ysa-hero-{{ section.id }} .rev-time{ color:var(--text-300); font-size:12px; }
+    #ysa-hero-{{ section.id }} .rev-body{ color:var(--text-100); font-size:14px; line-height:1.55; }
+    #ysa-hero-{{ section.id }} .rev-stars{ display:flex; gap:4px; margin-top:10px; filter: drop-shadow(0 0 6px rgba(18,180,255,.35)); }
+    #ysa-hero-{{ section.id }} .rev-stars svg{ width:16px; height:16px; }
+
+    /* ===== FOOTER (YSACheats / blue theme) ===== */
+    #ysa-hero-{{ section.id }} .ysa-footer{ width:100%; margin: var(--gap-footer) 0 0; border-top:1px solid rgba(18,180,255,.25); }
+    #ysa-hero-{{ section.id }} .ysa-footer .inner{ width:min(1280px, 94vw); margin:0 auto; padding:36px 0 22px; display:grid; gap:24px; }
+    @media (min-width: 960px){ #ysa-hero-{{ section.id }} .ysa-footer .inner{ grid-template-columns: 1.4fr 1fr 1fr; align-items:start; } }
+    #ysa-hero-{{ section.id }} .f-logo{ font-family:"Orbitron",sans-serif; font-weight:800; line-height:1; font-size: clamp(22px, 2vw, 28px); letter-spacing:.5px; }
+    #ysa-hero-{{ section.id }} .f-logo .ysa{ background: linear-gradient(90deg, var(--cyber-400), var(--cyber-500)); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow: 0 0 18px rgba(18,180,255,.35); }
+    #ysa-hero-{{ section.id }} .f-logo .cheats{ color:#fff; }
+    #ysa-hero-{{ section.id }} .f-title{ margin:0 0 10px 0; color:var(--cyber-400); font-weight:800; }
+    #ysa-hero-{{ section.id }} .f-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+    #ysa-hero-{{ section.id }} .f-link{ color:var(--text-100); text-decoration:none; opacity:.9; }
+    #ysa-hero-{{ section.id }} .f-link:hover{ opacity:1; text-decoration:underline; }
+    #ysa-hero-{{ section.id }} .f-bottom{ display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:24px; padding-top:14px; border-top:1px solid rgba(255,255,255,.06); font-size:14px; color:var(--text-300); grid-column:1/-1; }
+    #ysa-hero-{{ section.id }} .credit-pill{ display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px; background: radial-gradient(120% 120% at 30% 30%, var(--cyber-400), var(--cyber-500)); color:#001018; text-decoration:none; font-weight:800; border:1px solid rgba(134,242,255,.35); box-shadow: 0 10px 28px rgba(18,180,255,.25), inset 0 0 10px rgba(255,255,255,.18); }
+  </style>
+
+  <!-- Matrix -->
+  <canvas id="ysa-matrix-{{ section.id }}"></canvas>
+
+  <!-- HERO CONTENT -->
+  <div class="hero-viewport">
+    <div class="ysa-center">
+      <h1>Dominate, Exploit, Win.</h1>
+      <p class="sub">Cutting-edge <strong style="color:var(--cyber-300)">spoofers</strong>, <strong style="color:var(--cyber-400)">aimbots</strong> &amp; <strong style="color:var(--cyber-500)">exploits</strong>.</p>
+      <div class="ysa-cta">
+        <a class="ysa-btn primary" href="{{ section.settings.shop_link }}"><span class="icon"><svg viewBox="0 0 24 24"><path d="M7 7V6a5 5 0 0 1 10 0v1h3a1 1 0 0 1 1 1l-1.6 11.2A3 3 0 0 1 16.42 22H7.58a3 3 0 0 1-2.98-2.8L3 8a1 1 0 0 1 1-1h3zm2 0h6V6a3 3 0 0 0-6 0v1z"/></svg></span>{{ section.settings.shop_text }}</a>
+        <a class="ysa-btn ghost" href="{{ section.settings.discord_link }}"><span class="icon"><svg viewBox="0 0 24 24"><path d="M20.317 4.369A19.91 19.91 0 0 0 16.558 3a14.5 14.5 0 0 0-.7 1.45 18.79 18.79 0 0 0-7.716 0A14.5 14.5 0 0 0 7.442 3c-1.338.244-2.63.675-3.759 1.369C1.216 8.248.59 12.012.932 15.735a19.99 19.99 0 0 0 6.138 3.162c.474-.65.9-1.34 1.272-2.064a12.93 12.93 0 0 1-2.01-.95c.168-.124.333-.254.492-.39a13.94 13.94 0 0 0 10.264 0c.16.136.325.266.492.39-.644.374-1.32.687-2.01.95.372.724.798 1.414 1.272 2.064a19.99 19.99 0 0 0 6.138-3.162c.52-5.506-.886-9.231-2.665-11.366z"/></svg></span>{{ section.settings.discord_text }}</a>
+      </div>
+      <div class="trust">
+        <span class="stars" aria-hidden="true">
+          {% assign star_full = '<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>' %}
+          {{ star_full }}{{ star_full }}{{ star_full }}{{ star_full }}
+          <svg viewBox="0 0 24 24" width="18" height="18"><defs><linearGradient id="half-{{ section.id }}" x1="0" y1="0" x2="1" y2="0"><stop offset="50%" stop-color="#4fdcff"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path fill="url(#half-{{ section.id }})" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+        </span>
+        <strong style="color:#fff">{{ section.settings.rating_score }}</strong>
+        <span>based on <strong style="color:var(--cyber-300)">{{ section.settings.rating_count }}</strong></span>
+      </div>
+    </div>
+    <!-- TICKER -->
+    <div class="ysa-ticker" aria-hidden="false">
+      <div class="wrap">
+        <div class="lane">
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.39 4.85 5.35.78-3.87 3.77.91 5.32L12 14.9l-4.78 2.82.91-5.32L4.26 7.63l5.35-.78L12 2z"/></svg></span>Global Availability</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M13 3l7 7-8 8H5v-7l8-8zm-6 9v3h3l7-7-3-3-7 7z"/></svg></span>One-Click Launch</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-9 9a9 9 0 0 1 18 0z"/></svg></span>User-Friendly</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 7h6v10H9zM4 9h3v6H4zm13 0h3v6h-3z"/></svg></span>Live Support</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l10 6v8l-10 6L2 16V8l10-6zm0 2.2L4 8v8l8 4.8 8-4.8V8l-8-3.8z"/></svg></span>Undetected</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M5 6h14M5 18h14"/></svg></span>Optimized</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-6.93l-2.83 2.83M7.76 16.24l-2.83 2.83m12.02 0l-2.83-2.83M7.76 7.76 4.93 4.93"/></svg></span>Regular Updates</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v2h1a2 2 0 0 1 2 2v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v2h6V7a3 3 0 0 0-3-3z"/></svg></span>Safe Checkout</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M13 3h-2l-1 5H6l6 13 6-13 h-4z"/></svg></span>Instant Delivery</span>
+      </div>
+      <div class="lane">
+        <!-- duplicate -->
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.39 4.85 5.35.78-3.87 3.77.91 5.32L12 14.9l-4.78 2.82.91-5.32L4.26 7.63l5.35-.78L12 2z"/></svg></span>Global Availability</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M13 3l7 7-8 8H5v-7l8-8zm-6 9v3h3l7-7-3-3-7 7z"/></svg></span>One-Click Launch</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-9 9a9 9 0 0 1 18 0z"/></svg></span>User-Friendly</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 7h6v10H9zM4 9h3v6H4zm13 0h3v6h-3z"/></svg></span>Live Support</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2l10 6v8l-10 6L2 16V8l10-6zm0 2.2L4 8v8l8 4.8 8-4.8V8l-8-3.8z"/></svg></span>Undetected</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M5 6h14M5 18h14"/></svg></span>Optimized</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-6.93l-2.83 2.83M7.76 16.24l-2.83 2.83m12.02 0l-2.83-2.83M7.76 7.76 4.93 4.93"/></svg></span>Regular Updates</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5v2h1a2 2 0 0 1 2 2v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v2h6V7a3 3 0 0 0-3-3z"/></svg></span>Safe Checkout</span>
+        <span class="pill"><span class="icon"><svg viewBox="0 0 24 24"><path d="M13 3h-2l-1 5H6l6 13 6-13 h-4z"/></svg></span>Instant Delivery</span>
+      </div>
+    </div>
+    </div>
+  </div>
+  <!-- BOTTOM DIVIDER (tight) -->
+  <div class="ysa-divider ysa-divider--tight" aria-hidden="true"></div>
+
+  <!-- FEATURED (up to chosen count) -->
+  <div class="featured">
+    <div class="head">
+      <h2 class="title">{{ section.settings.featured_heading | default: 'Featured Products' }}</h2>
+      {% if section.settings.view_all_link != blank %}
+        <div class="right"><a class="view-all" href="{{ section.settings.view_all_link | escape }}">{{ section.settings.view_all_label | default: 'View all products' }}</a></div>
+      {% endif %}
+    </div>
+
+    <div class="grid" role="list" aria-label="Featured products">
+      {% assign max_cards = section.settings.featured_count | default: 4 | plus: 0 %}
+      {% for i in (1..max_cards) %}
+        {% assign setting = 'product_' | append: i %}
+        {% assign ref = section.settings[setting] %}
+        {% if ref and ref.id %}
+          {% assign p = ref %}
+        {% else %}
+          {% assign p = all_products[ref] %}
+        {% endif %}
+        <article class="card" role="listitem">
+          {% if p %}
+            <a class="media" href="{{ p.url }}" aria-label="{{ p.title | escape }}">
+              <span class="tuned" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm-1.2 13.2-3-3 1.4-1.4 1.6 1.6 3.8-3.8 1.4 1.4-5.2 5.2z"/></svg> TUNED</span>
+              {% if p.featured_image %}
+                <img src="{{ p.featured_image | img_url: '1000x' }}" alt="{{ p.featured_image.alt | default: p.title | escape }}" loading="lazy" width="{{ p.featured_image.width }}" height="{{ p.featured_image.height }}">
+              {% else %}
+                <div style="position:absolute;inset:0;display:grid;place-items:center;color:var(--text-300);font-size:14px;">No image</div>
+              {% endif %}
+            </a>
+            <div class="body">
+              <h3 class="prod-title"><a href="{{ p.url }}" style="color:inherit;text-decoration:none">{{ p.title }}</a></h3>
+              <div class="quick-badges">
+                <span class="pill pill--undetected">Undetected</span>
+                <span class="pill pill--premium">Premium</span>
+                {% assign pct = 0 %}
+                {% if p.compare_at_price_max > p.price %}
+                  {% assign pct = p.compare_at_price_max | minus: p.price | times: 100.0 | divided_by: p.compare_at_price_max | round %}
+                {% endif %}
+                <span class="pill pill--off">{% if pct > 0 %}{{ pct }}% OFF{% else %}15% OFF{% endif %}</span>
+              </div>
+              {% assign short_desc = p.metafields.custom.short_description %}
+              {% if short_desc == blank %}{% assign short_desc = p.description | strip_html | truncate: 140 %}{% endif %}
+              <div class="desc">{{ short_desc }}</div>
+              {% assign rating_value = p.metafields.reviews.rating | default: p.metafields.reviews.rating_value %}
+              {% assign rating_count = p.metafields.reviews.count | default: p.metafields.reviews.rating_count %}
+              {% if rating_value %}
+                <div class="rating" aria-label="Rated {{ rating_value }} out of 5{% if rating_count %} based on {{ rating_count }} reviews{% endif %}">
+                  <span class="stars" aria-hidden="true">
+                    {% assign r = rating_value | plus: 0 %}
+                    {% for star in (1..5) %}
+                      {% if r >= star %}
+                        <svg viewBox="0 0 24 24"><defs><linearGradient id="g-{{ section.id }}-{{ i }}-{{ forloop.index }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#86f2ff"/><stop offset="50%" stop-color="#4fdcff"/><stop offset="100%" stop-color="#12b4ff"/></linearGradient></defs><path fill="url(#g-{{ section.id }}-{{ i }}-{{ forloop.index }})" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+                      {% elsif r > star-1 %}
+                        <svg viewBox="0 0 24 24"><defs><linearGradient id="h-{{ section.id }}-{{ i }}-{{ forloop.index }}" x1="0" y1="0" x2="1" y2="0"><stop offset="50%" stop-color="#4fdcff"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path fill="url(#h-{{ section.id }}-{{ i }}-{{ forloop.index }})" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/><path fill="rgba(255,255,255,0.12)" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+                      {% else %}
+                        <svg viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.12)" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+                      {% endif %}
+                    {% endfor %}
+                  </span>
+                  <strong style="color:#fff">{{ rating_value }}</strong>
+                  {% if rating_count %}<span>based on <strong style="color:var(--cyber-300)">{{ rating_count }}</strong></span>{% endif %}
+                </div>
+              {% endif %}
+              <div class="price-row">
+                {% if p.variants.size > 1 %}<span class="from">From</span>{% endif %}
+                <div class="price">{{ p.price | money }}</div>
+                {% if p.compare_at_price_max > p.price %}<div class="compare">{{ p.compare_at_price_max | money }}</div>{% endif %}
+              </div>
+              <div class="hr" aria-hidden="true"></div>
+              <div class="bottom-row">
+                <div class="ptype">{% if p.type != blank %}{{ p.type }}{% endif %}</div>
+                <a class="btn" href="{{ p.url }}" aria-label="Buy {{ p.title | escape }}">Buy Now</a>
+              </div>
+            </div>
+          {% else %}
+            <div class="media" aria-hidden="true" style="display:grid;place-items:center;color:var(--text-300);">
+              <span class="tuned"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm-1.2 13.2-3-3 1.4-1.4 1.6 1.6 3.8-3.8 1.4 1.4-5.2 5.2z"/></svg>TUNED</span>
+              <span style="opacity:.8">Select a product</span>
+            </div>
+            <div class="body">
+              <h3 class="prod-title">Product title</h3>
+              <div class="quick-badges">
+                <span class="pill pill--undetected">Undetected</span>
+                <span class="pill pill--premium">Premium</span>
+                <span class="pill pill--off">15% OFF</span>
+              </div>
+              <div class="desc"></div>
+              <div class="price-row"><div class="price">$0.00</div></div>
+              <div class="hr"></div>
+              <div class="bottom-row"><div class="ptype"></div><span class="btn" style="pointer-events:none;opacity:.6">Buy Now</span></div>
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="ysa-divider" aria-hidden="true"></div>
+
+  <!-- HOW (optional) -->
+  {% if section.settings.how_show %}
+    <div class="how" aria-labelledby="how-title-{{ section.id }}">
+      <h2 id="how-title-{{ section.id }}" class="how-title">{{ section.settings.how_title | default: "How It Works" }}</h2>
+      {% if section.settings.how_subtitle != blank %}
+        <p class="how-sub">{{ section.settings.how_subtitle }}</p>
+      {% else %}
+        <p class="how-sub">Simple steps to get started with our services</p>
+      {% endif %}
+      <div class="how-grid" role="list">
+        <article class="how-card" role="listitem" tabindex="0" aria-label="Step 1"><span class="chip">1</span><h3 class="how-title-sm">{{ section.settings.how_step1_title | default: "Choose Your Product" }}</h3><div class="how-divider" aria-hidden="true"></div><p class="how-body">{{ section.settings.how_step1_body | default: "Select the product that best fits your needs." }}</p></article>
+        <article class="how-card" role="listitem" tabindex="0" aria-label="Step 2"><span class="chip">2</span><h3 class="how-title-sm">{{ section.settings.how_step2_title | default: "Secure Checkout" }}</h3><div class="how-divider" aria-hidden="true"></div><p class="how-body">{{ section.settings.how_step2_body | default: "Complete purchase with secure payment." }}</p></article>
+        <article class="how-card" role="listitem" tabindex="0" aria-label="Step 3"><span class="chip">3</span><h3 class="how-title-sm">{{ section.settings.how_step3_title | default: "Instant Delivery" }}</h3><div class="how-divider" aria-hidden="true"></div><p class="how-body">{{ section.settings.how_step3_body | default: "Receive your order instantly." }}</p></article>
+        <article class="how-card" role="listitem" tabindex="0" aria-label="Step 4"><span class="chip">4</span><h3 class="how-title-sm">{{ section.settings.how_step4_title | default: "Enjoy" }}</h3><div class="how-divider" aria-hidden="true"></div><p class="how-body">{{ section.settings.how_step4_body | default: "Start using with full support." }}</p></article>
+      </div>
+      <div class="how-cta-wrap"><a class="how-btn" href="{{ section.settings.how_button_link | default: '/collections/all' | escape }}">{{ section.settings.how_button_label | default: "Browse Our Products →" }}</a></div>
+    </div>
+  {% endif %}
+
+  <!-- Divider -->
+  <div class="ysa-divider" aria-hidden="true"></div>
+
+  <!-- REVIEWS (auto-scroll) -->
+  {% if section.settings.reviews_show %}
+    <div class="reviews" aria-labelledby="rev-title-{{ section.id }}" style="--rev-dur: {{ section.settings.reviews_speed_sec | default: 40 }}s">
+      <h2 id="rev-title-{{ section.id }}" class="reviews-title">What Our Customers Say</h2>
+      <p class="reviews-sub">Thousands of gamers trust Speed Services for their gaming advantage.</p>
+
+      <div class="auto-wrap" id="rev-wrap-{{ section.id }}">
+        <!-- lane 1 -->
+        <div class="auto-lane">
+          {% assign any_reviews = false %}
+          {% for block in section.blocks %}{% if block.type == 'review' %}{% assign any_reviews = true %}{% endif %}{% endfor %}
+
+          {% if any_reviews %}
+            {% for block in section.blocks %}
+              {% if block.type == 'review' %}
+                {% assign raw_name = block.settings.name | default: 'Customer' %}
+                {% assign lower = raw_name | downcase %}
+                {% if raw_name == blank or lower == 'vouch' %}{% assign display_name = 'Customer' %}{% else %}{% assign display_name = raw_name %}{% endif %}
+                {% assign initials_parts = display_name | strip | upcase | split: ' ' %}
+                {% if initials_parts.size > 1 %}
+                  {% assign chip = initials_parts.first | slice: 0,1 | append: initials_parts.last | slice: 0,1 %}
+                {% else %}
+                  {% assign chip = display_name | slice: 0,2 | upcase %}
+                {% endif %}
+                <article class="review-card" {{ block.shopify_attributes }}>
+                  <div class="rev-top">
+                    <div class="avatar" aria-hidden="true">{{ chip }}</div>
+                    <div><div class="rev-name">{{ display_name }}</div><div class="rev-time" data-datetime="{{ block.settings.datetime | escape }}">{{ block.settings.datetime | escape }}</div></div>
+                  </div>
+                  <div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">{{ block.settings.body | escape }}</div>
+                  <div class="rev-stars" aria-label="{{ block.settings.stars | default: 5 }} out of 5 stars">
+                    {% assign s = block.settings.stars | default: 5 %}
+                    {% for i in (1..5) %}
+                      {% if s >= i %}
+                        <svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+                      {% else %}
+                        <svg viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.15)" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </article>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <!-- simple seeded fallbacks -->
+            <article class="review-card"><div class="rev-top"><div class="avatar">7K</div><div><div class="rev-name">7KM</div><div class="rev-time" data-datetime="2025-08-20 15:32">2025-08-20 15:32</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">والله ان المتجر مضمون و فكو الباند و يردون بسرعه</div><div class="rev-stars" aria-label="5 out of 5">{% for i in (1..5) %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endfor %}</div></article>
+            <article class="review-card"><div class="rev-top"><div class="avatar">Ki</div><div><div class="rev-name">Kiwiヅ</div><div class="rev-time" data-datetime="2025-08-20 21:59">2025-08-20 21:59</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">+rep 100% recommend perm woofer works great fast and easy ticket responses⭐️⭐️⭐️⭐️⭐️</div><div class="rev-stars" aria-label="5 out of 5">{% for i in (1..5) %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endfor %}</div></article>
+            <article class="review-card"><div class="rev-top"><div class="avatar">Wa</div><div><div class="rev-name">waleed</div><div class="rev-time" data-datetime="2025-08-23 17:51">2025-08-23 17:51</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">I bought a temp subwoofer, excellent store and fast dealing</div><div class="rev-stars" aria-label="5 out of 5">{% for i in (1..5) %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endfor %}</div></article>
+            <article class="review-card"><div class="rev-top"><div class="avatar">7K</div><div><div class="rev-name">7KM</div><div class="rev-time" data-datetime="2025-08-25 00:53">2025-08-25 00:53</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">+rep Best Perm woofer out there 100/100</div><div class="rev-stars" aria-label="5 out of 5">{% for i in (1..5) %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endfor %}</div></article>
+            <article class="review-card"><div class="rev-top"><div class="avatar">b1</div><div><div class="rev-name">b1ec</div><div class="rev-time" data-datetime="2025-08-26 02:15">2025-08-26 02:15</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">+rep the best in market fortnite private ud ⭐️⭐️⭐️⭐️⭐️</div><div class="rev-stars" aria-label="5 out of 5">{% for i in (1..5) %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endfor %}</div></article>
+          {% endif %}
+        </div>
+
+        <!-- lane 2 duplicate -->
+        <div class="auto-lane" aria-hidden="true">
+          {% for block in section.blocks %}
+            {% if block.type == 'review' %}
+              {% assign raw_name = block.settings.name | default: 'Customer' %}
+              {% assign lower = raw_name | downcase %}
+              {% if raw_name == blank or lower == 'vouch' %}{% assign display_name = 'Customer' %}{% else %}{% assign display_name = raw_name %}{% endif %}
+              {% assign initials_parts = display_name | strip | upcase | split: ' ' %}
+              {% if initials_parts.size > 1 %}{% assign chip = initials_parts.first | slice: 0,1 | append: initials_parts.last | slice: 0,1 %}{% else %}{% assign chip = display_name | slice: 0,2 | upcase %}{% endif %}
+              <article class="review-card"><div class="rev-top"><div class="avatar" aria-hidden="true">{{ chip }}</div><div><div class="rev-name">{{ display_name }}</div><div class="rev-time" data-datetime="{{ block.settings.datetime | escape }}">{{ block.settings.datetime | escape }}</div></div></div><div class="rev-body" data-mask="{{ section.settings.mask_profanity }}">{{ block.settings.body | escape }}</div><div class="rev-stars" aria-label="{{ block.settings.stars | default: 5 }} out of 5 stars">{% assign s = block.settings.stars | default: 5 %}{% for i in (1..5) %}{% if s >= i %}<svg viewBox="0 0 24 24"><path fill="#4fdcff" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% else %}<svg viewBox="0 0 24 24"><path fill="rgba(255,255,255,0.15)" d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01L12 2z"/></svg>{% endif %}{% endfor %}</div></article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Divider -->
+  <div class="ysa-divider" aria-hidden="true"></div>
+
+  <!-- FOOTER -->
+  <footer class="ysa-footer" aria-label="Site footer">
+    <div class="inner">
+      <div><div class="f-logo"><span class="ysa">YSA</span><span class="cheats">Cheats</span></div></div>
+      <div>
+        <h3 class="f-title">Products</h3>
+        <ul class="f-list">
+          {% for block in section.blocks %}
+            {% if block.type == 'footer_product' and block.settings.product != blank %}
+              {% assign fp = all_products[block.settings.product] | default: block.settings.product %}
+              {% if fp %}<li><a class="f-link" href="{{ fp.url }}">{{ fp.title }}</a></li>{% endif %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3 class="f-title">Support</h3>
+        <ul class="f-list">
+          {% for block in section.blocks %}
+            {% if block.type == 'footer_link' and block.settings.label != blank and block.settings.url != blank %}
+              <li><a class="f-link" href="{{ block.settings.url | escape }}">{{ block.settings.label | escape }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="f-bottom">
+        <div>© {{ "now" | date: "%Y" }} YSACheats. All rights reserved.</div>
+        <a class="credit-pill" href="{{ section.settings.footer_credit_url | default: '#' | escape }}">🔧 {{ section.settings.footer_credit_label | default: 'YSACheats' }}</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    (function(){
+      const root = document.getElementById('ysa-hero-{{ section.id }}');
+      const canvas = document.getElementById('ysa-matrix-{{ section.id }}');
+      if(canvas && root){
+        const ctx = canvas.getContext('2d'); let w,h,fontSize,columns,drops,lastTime=0; const speedFactor=.95;
+        function sizeCanvas(){ const dpr=Math.max(1,window.devicePixelRatio||1); w=window.innerWidth; h=root.scrollHeight; canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); fontSize=Math.max(12,Math.floor(w/90)); columns=Math.ceil(w/fontSize); drops=Array.from({length:columns},()=>Math.floor(Math.random()*h/fontSize)); ctx.font=fontSize+"px Orbitron, monospace"; }
+        function draw(ts){ const interval=1000*(1-speedFactor); if(ts-lastTime>interval){ ctx.fillStyle="rgba(5,8,22,.18)"; ctx.fillRect(0,0,w,h); for(let i=0;i<columns;i++){ const char=Math.random()>.5?'1':'0'; const x=i*fontSize; const y=drops[i]*fontSize; ctx.fillStyle="rgba(79,220,255,.9)"; ctx.fillText(char,x,y); if(y>h&&Math.random()>.975) drops[i]=0; drops[i]+=1; } lastTime=ts; } requestAnimationFrame(draw); }
+        sizeCanvas(); requestAnimationFrame(draw); window.addEventListener('resize', sizeCanvas);
+      }
+      // relative time + profanity mask
+      const wrap = document.getElementById('rev-wrap-{{ section.id }}'); if(!wrap) return;
+      wrap.querySelectorAll('.rev-time').forEach(el=>{ const t=Date.parse(el.getAttribute('data-datetime')||''); if(!isNaN(t)){ const diff=Math.max(1,Math.floor((Date.now()-t)/1000)); const u=[["year",31536000],["month",2592000],["week",604800],["day",86400],["hour",3600],["minute",60]]; let out="just now"; for(const [n,s] of u){const v=Math.floor(diff/s); if(v>=1){out=`${v} ${n}${v>1?'s':''} ago`;break}} el.textContent=out; }});
+      if("{{ section.settings.mask_profanity }}".toLowerCase()==="true"){ const banned=["nigger","niggers","nigga","niggas","fuck","shit","bitch"]; wrap.querySelectorAll('.rev-body').forEach(el=>{ let t=el.textContent; banned.forEach(w=>{ const re=new RegExp(`\\b${w}\\b`,'gi'); t=t.replace(re, m=>m[0]+"•".repeat(Math.max(0,m.length-2))+m[m.length-1]); }); el.textContent=t; }); }
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "YSA H",
+  "tag": "section",
+  "settings": [
+    { "type": "number", "id": "header_offset", "label": "Header height offset (px)", "default": 0 },
+
+    { "type": "text", "id": "shop_text", "label": "Shop button text", "default": "Shop Now" },
+    { "type": "url", "id": "shop_link", "label": "Shop button link" },
+    { "type": "text", "id": "discord_text", "label": "Discord button text", "default": "Join Discord" },
+    { "type": "url", "id": "discord_link", "label": "Discord button link" },
+
+    { "type": "text", "id": "rating_score", "label": "Rating score", "default": "4.9/5" },
+    { "type": "text", "id": "rating_count", "label": "Rating count text", "default": "3,000+ users" },
+
+    { "type": "text", "id": "featured_heading", "label": "Featured heading", "default": "Featured Products" },
+    { "type": "range", "id": "featured_count", "label": "How many featured cards to show", "min": 1, "max": 4, "step": 1, "default": 4 },
+    { "type": "range", "id": "featured_columns_desktop", "label": "Cards per row (desktop)", "min": 2, "max": 4, "step": 1, "default": 4 },
+    { "type": "text", "id": "view_all_label", "label": "View-all label", "default": "View all products" },
+    { "type": "url", "id": "view_all_link", "label": "View-all link" },
+
+    { "type": "product", "id": "product_1", "label": "Product 1" },
+    { "type": "product", "id": "product_2", "label": "Product 2" },
+    { "type": "product", "id": "product_3", "label": "Product 3" },
+    { "type": "product", "id": "product_4", "label": "Product 4" },
+
+    { "type": "checkbox", "id": "show_dividers", "label": "Show glowing dividers between blocks", "default": true },
+
+    { "type": "number", "id": "gap_featured_top", "label": "Top gap before Featured (px)", "default": 56 },
+    { "type": "number", "id": "gap_how_top", "label": "Top gap before How It Works (px)", "default": 72 },
+    { "type": "number", "id": "gap_reviews_top", "label": "Top gap before Reviews (px)", "default": 72 },
+    { "type": "number", "id": "gap_footer_top", "label": "Top gap before Footer (px)", "default": 72 },
+
+    { "type": "checkbox", "id": "how_show", "label": "Show How It Works", "default": true },
+    { "type": "text", "id": "how_title", "label": "How It Works title", "default": "How It Works" },
+    { "type": "text", "id": "how_subtitle", "label": "How It Works subtitle", "default": "Simple steps to get started with our services" },
+    { "type": "text", "id": "how_button_label", "label": "CTA label", "default": "Browse Our Products →" },
+    { "type": "url", "id": "how_button_link", "label": "CTA link", "default": "/collections/all" },
+    { "type": "range", "id": "how_columns_desktop", "label": "Steps per row (desktop)", "min": 2, "max": 4, "step": 1, "default": 4 },
+
+    { "type": "checkbox", "id": "reviews_show", "label": "Show reviews", "default": true },
+    { "type": "range", "id": "reviews_speed_sec", "label": "Reviews auto-scroll duration (seconds, higher = slower)", "min": 20, "max": 80, "step": 5, "default": 40 },
+    { "type": "checkbox", "id": "mask_profanity", "label": "Mask profanity in reviews", "default": true },
+
+    { "type": "text", "id": "footer_credit_label", "label": "Credit label", "default": "YSACheats" },
+    { "type": "url", "id": "footer_credit_url", "label": "Credit URL" }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Customer review",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "text", "id": "datetime", "label": "Date/Time (ISO or text)" },
+        { "type": "range", "id": "stars", "label": "Stars", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "body", "label": "Review text" }
+      ]
+    },
+    {
+      "type": "footer_product",
+      "name": "Footer product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" }
+      ]
+    },
+    {
+      "type": "footer_link",
+      "name": "Footer link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "YSA",
+      "blocks": [
+        { "type": "review", "settings": { "name": "7KM", "datetime": "2025-08-20 15:32", "stars": 5, "body": "والله ان المتجر مضمون و فكو الباند و يردون بسرعه" } },
+        { "type": "review", "settings": { "name": "Kiwiヅ", "datetime": "2025-08-20 21:59", "stars": 5, "body": "+rep 100% recommend perm woofer works great fast and easy ticket responses⭐️⭐️⭐️⭐️⭐️" } },
+        { "type": "review", "settings": { "name": "waleed", "datetime": "2025-08-23 17:51", "stars": 5, "body": "I bought a temp subwoofer, excellent store and fast dealing" } },
+        { "type": "review", "settings": { "name": "7KM", "datetime": "2025-08-25 00:53", "stars": 5, "body": "+rep Best Perm woofer out there 100/100" } },
+        { "type": "footer_product" },
+        { "type": "footer_link", "settings": { "label": "FAQ", "url": "/pages/faq" } },
+        { "type": "footer_link", "settings": { "label": "TOS", "url": "/policies/terms-of-service" } },
+        { "type": "footer_link", "settings": { "label": "Privacy", "url": "/policies/privacy-policy" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
